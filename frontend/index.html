@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Migrant Worker Navigator</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <!-- Leaflet (Step 10 — loads but map.js handles absence gracefully) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+<div id="app-root">
+
+  <!-- ── Screen 1: Language ───────────────────────────────────────────── -->
+  <section id="screen-language" class="screen active">
+    <h1>Migrant Worker Navigator</h1>
+    <p>Choose your language / अपनी भाषा चुनें</p>
+    <button id="btn-english" class="lang-btn english">English</button>
+    <button id="btn-hindi"   class="lang-btn hindi">हिन्दी</button>
+  </section>
+
+  <!-- ── Screen 2: Triage ─────────────────────────────────────────────── -->
+  <section id="screen-triage" class="screen">
+    <h2>Where are you traveling?</h2>
+
+    <div class="corridor-group">
+      <label for="corridor-select">Select your route</label>
+      <select id="corridor-select" class="corridor-select">
+        <option value="bihar_hyd">Bihar → Hyderabad (Telangana) — Shyam Lal</option>
+        <option value="up_mumbai">Uttar Pradesh → Mumbai (Maharashtra) — Sajid</option>
+      </select>
+    </div>
+
+    <div class="triage-btns">
+      <button id="btn-emergency" class="triage-btn emergency">
+        🔴 Emergency — I need help now
+      </button>
+      <button id="btn-planning" class="triage-btn planning">
+        🔵 Plan my benefits
+      </button>
+    </div>
+  </section>
+
+  <!-- ── Screen 3: Emergency ──────────────────────────────────────────── -->
+  <section id="screen-emergency" class="screen">
+    <div class="emer-header">
+      <button class="icon-btn" onclick="showScreen('triage')">←</button>
+      <h2>🔴 Emergency Help</h2>
+    </div>
+    <div class="emer-input-area">
+      <textarea id="emer-input" placeholder="Describe your emergency — e.g. 'I need a hospital' or 'I have no shelter'"></textarea>
+      <button id="emer-send-btn" class="emer-send-btn">Get Help Now</button>
+    </div>
+    <div id="emer-result"></div>
+  </section>
+
+  <!-- ── Screen 4: Planning / Chat ────────────────────────────────────── -->
+  <section id="screen-chat" class="screen">
+    <div class="chat-header">
+      <button class="icon-btn" onclick="showScreen('triage')">←</button>
+      <h3>Welfare Navigator</h3>
+      <button id="btn-voiceover" class="icon-btn" title="Toggle voiceover">🔇</button>
+      <button id="btn-reset" class="icon-btn" title="Reset session">↺</button>
+    </div>
+
+    <div id="chat-history" class="chat-history"></div>
+
+    <div id="input-dock" class="input-dock">
+      <button id="mic-btn" class="icon-btn" title="Speak">🎤</button>
+      <textarea
+        id="chat-input"
+        placeholder="Tell me about your situation…"
+        rows="1"
+      ></textarea>
+      <button id="send-btn" class="send-btn" title="Send">➤</button>
+    </div>
+  </section>
+
+  <!-- ── Screen 5: Detail split-view ──────────────────────────────────── -->
+  <section id="screen-detail" class="screen">
+    <div class="detail-header">
+      <button id="btn-back-detail" class="icon-btn">←</button>
+      <div id="detail-status-dot" class="card-dot"></div>
+      <h3 id="detail-scheme-name"></h3>
+    </div>
+
+    <div class="detail-body">
+      <div class="detail-section">
+        <h4>About this scheme</h4>
+        <p id="detail-detail"></p>
+      </div>
+
+      <div class="detail-section">
+        <h4>Documents you will likely need</h4>
+        <ul id="detail-checklist" class="checklist"></ul>
+      </div>
+
+      <div class="detail-section">
+        <h4>Steps to apply <span style="font-size:.8rem;color:#9e9e9e">(tap 📍 steps to see on map)</span></h4>
+        <ul id="detail-timeline" class="timeline-list"></ul>
+      </div>
+
+      <div class="detail-section">
+        <h4>Office locations</h4>
+        <div id="map-container"></div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- #app-root -->
+
+<script src="/js/audio.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/map.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

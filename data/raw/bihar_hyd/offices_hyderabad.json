@@ -1,0 +1,127 @@
+{
+  "source_tier": "curated_sample",
+  "disclosure": "Illustrative sample data. Verify current addresses before visiting.",
+  "corridor_id": "bihar_hyd",
+  "offices": [
+    {
+      "id": "csc_hyd_01",
+      "label": "CSC — Charminar",
+      "lat": 17.3616,
+      "lng": 78.4747,
+      "address": "Near Charminar, Hyderabad Old City, Telangana 500002",
+      "scheme_id": "eshram"
+    },
+    {
+      "id": "csc_hyd_02",
+      "label": "CSC — Secunderabad",
+      "lat": 17.4399,
+      "lng": 78.4983,
+      "address": "Clock Tower Area, Secunderabad, Telangana 500003",
+      "scheme_id": "eshram"
+    },
+    {
+      "id": "csc_hyd_03",
+      "label": "CSC — LB Nagar",
+      "lat": 17.3490,
+      "lng": 78.5522,
+      "address": "LB Nagar Main Road, Hyderabad, Telangana 500074",
+      "scheme_id": "eshram"
+    },
+    {
+      "id": "csc_hyd_04",
+      "label": "CSC — Kukatpally",
+      "lat": 17.4849,
+      "lng": 78.4138,
+      "address": "KPHB Colony, Kukatpally, Hyderabad, Telangana 500072",
+      "scheme_id": "eshram"
+    },
+    {
+      "id": "fps_hyd_01",
+      "label": "Fair Price Shop — Charminar",
+      "lat": 17.3600,
+      "lng": 78.4760,
+      "address": "Charminar Ward, Hyderabad Old City, Telangana 500002",
+      "scheme_id": "onorc"
+    },
+    {
+      "id": "fps_hyd_02",
+      "label": "Fair Price Shop — Malakpet",
+      "lat": 17.3760,
+      "lng": 78.5050,
+      "address": "Malakpet Colony, Hyderabad, Telangana 500036",
+      "scheme_id": "onorc"
+    },
+    {
+      "id": "fps_hyd_03",
+      "label": "Fair Price Shop — Begum Bazar",
+      "lat": 17.3850,
+      "lng": 78.4700,
+      "address": "Begum Bazar, Hyderabad, Telangana 500012",
+      "scheme_id": "onorc"
+    },
+    {
+      "id": "hosp_hyd_01",
+      "label": "Gandhi General Hospital",
+      "lat": 17.3850,
+      "lng": 78.4867,
+      "address": "Gandhi Hospital Road, Secunderabad, Telangana 500003",
+      "scheme_id": "pmjay"
+    },
+    {
+      "id": "hosp_hyd_02",
+      "label": "Osmania General Hospital",
+      "lat": 17.3786,
+      "lng": 78.4750,
+      "address": "Afzal Gunj, Hyderabad, Telangana 500012",
+      "scheme_id": "pmjay"
+    },
+    {
+      "id": "hosp_hyd_03",
+      "label": "King Koti Government Hospital",
+      "lat": 17.3925,
+      "lng": 78.4764,
+      "address": "King Koti Road, Abids, Hyderabad, Telangana 500001",
+      "scheme_id": "pmjay"
+    },
+    {
+      "id": "bank_hyd_01",
+      "label": "State Bank of India — Abids",
+      "lat": 17.3940,
+      "lng": 78.4742,
+      "address": "Bank Street, Abids, Hyderabad, Telangana 500001",
+      "scheme_id": "pmsby"
+    },
+    {
+      "id": "bank_hyd_02",
+      "label": "Bank of Baroda — Charminar",
+      "lat": 17.3620,
+      "lng": 78.4755,
+      "address": "Charminar Road, Hyderabad, Telangana 500002",
+      "scheme_id": "pmsby"
+    },
+    {
+      "id": "labour_hyd_01",
+      "label": "District Labour Office — Hyderabad",
+      "lat": 17.3850,
+      "lng": 78.4930,
+      "address": "Fateh Maidan Road, Hyderabad, Telangana 500004",
+      "scheme_id": "bocw"
+    },
+    {
+      "id": "shelter_hyd_01",
+      "label": "Night Shelter — Secunderabad",
+      "lat": 17.4399,
+      "lng": 78.4900,
+      "address": "Railway Station Area, Secunderabad, Telangana 500003",
+      "scheme_id": "emergency"
+    },
+    {
+      "id": "shelter_hyd_02",
+      "label": "Migrant Worker Shelter — Charminar",
+      "lat": 17.3570,
+      "lng": 78.4730,
+      "address": "Charminar Area, Hyderabad Old City, Telangana 500002",
+      "scheme_id": "emergency"
+    }
+  ]
+}

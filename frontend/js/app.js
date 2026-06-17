@@ -1,0 +1,386 @@
+// ── Global state ───────────────────────────────────────────────────────────
+const appState = {
+  language: 'en',
+  corridor_id: 'bihar_hyd',
+  flow_mode: 'planning',
+  screen: 'language',
+  voiceoverEnabled: false,
+  awaitingAck: false,
+  conversation_history: [],
+  currentCards: [],       // last set of scheme cards
+  currentPins: [],        // all map pins for current response
+};
+
+// ── Screen routing ─────────────────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(`screen-${name}`);
+  if (el) el.classList.add('active');
+  appState.screen = name;
+}
+
+// ── Language screen ────────────────────────────────────────────────────────
+document.getElementById('btn-english').addEventListener('click', () => {
+  appState.language = 'en';
+  showScreen('triage');
+});
+document.getElementById('btn-hindi').addEventListener('click', () => {
+  appState.language = 'hi';
+  showScreen('triage');
+});
+
+// ── Triage screen ──────────────────────────────────────────────────────────
+document.getElementById('corridor-select').addEventListener('change', e => {
+  appState.corridor_id = e.target.value;
+});
+
+document.getElementById('btn-emergency').addEventListener('click', () => {
+  appState.flow_mode = 'emergency';
+  clearChat();
+  showScreen('emergency');
+});
+
+document.getElementById('btn-planning').addEventListener('click', () => {
+  appState.flow_mode = 'planning';
+  clearChat();
+  showScreen('chat');
+});
+
+// ── Voiceover toggle ───────────────────────────────────────────────────────
+document.getElementById('btn-voiceover').addEventListener('click', () => {
+  appState.voiceoverEnabled = !appState.voiceoverEnabled;
+  document.getElementById('btn-voiceover').textContent = appState.voiceoverEnabled ? '🔊' : '🔇';
+});
+
+// ── Mic button (STT) ───────────────────────────────────────────────────────
+let _recorder = null;
+document.getElementById('mic-btn').addEventListener('click', async () => {
+  const micBtn = document.getElementById('mic-btn');
+  if (_recorder && _recorder.state === 'recording') {
+    _recorder.stop();
+    micBtn.textContent = '🎤';
+    return;
+  }
+  micBtn.textContent = '⏹';
+  _recorder = await startSTT(
+    text => {
+      micBtn.textContent = '🎤';
+      if (text) {
+        document.getElementById('chat-input').value = text;
+        sendMessage();
+      }
+    },
+    err => {
+      micBtn.textContent = '🎤';
+      console.warn('STT error:', err);
+    }
+  );
+});
+
+// ── Reset session ──────────────────────────────────────────────────────────
+document.getElementById('btn-reset').addEventListener('click', () => {
+  appState.conversation_history = [];
+  appState.currentCards = [];
+  appState.currentPins = [];
+  appState.awaitingAck = false;
+  clearChat();
+  showScreen('language');
+});
+
+// ── Chat screen — input dock ───────────────────────────────────────────────
+const chatInput = document.getElementById('chat-input');
+const sendBtn   = document.getElementById('send-btn');
+const inputDock = document.getElementById('input-dock');
+
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (!appState.awaitingAck) sendMessage();
+  }
+});
+sendBtn.addEventListener('click', () => {
+  if (!appState.awaitingAck) sendMessage();
+});
+
+function clearChat() {
+  document.getElementById('chat-history').innerHTML = '';
+  setDockEnabled(true);
+  appState.awaitingAck = false;
+}
+
+function setDockEnabled(enabled) {
+  inputDock.classList.toggle('disabled', !enabled);
+  chatInput.disabled = !enabled;
+  sendBtn.disabled   = !enabled;
+}
+
+async function sendMessage() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  chatInput.value = '';
+
+  appendBubble(text, 'user');
+  appState.conversation_history.push({ role: 'user', content: text });
+
+  const loading = appendSpinner();
+  try {
+    const resp = await postChat({
+      message: text,
+      conversation_history: appState.conversation_history.slice(-10),
+      corridor_id: appState.corridor_id,
+      flow_mode: appState.flow_mode,
+    });
+    loading.remove();
+    handleChatResponse(resp);
+  } catch (err) {
+    loading.remove();
+    appendBubble('Sorry, something went wrong. Please try again.', 'agent');
+    console.error(err);
+  }
+}
+
+// ── Emergency screen ───────────────────────────────────────────────────────
+document.getElementById('emer-send-btn').addEventListener('click', sendEmergency);
+document.getElementById('emer-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendEmergency(); }
+});
+
+async function sendEmergency() {
+  const text = document.getElementById('emer-input').value.trim();
+  if (!text) return;
+  document.getElementById('emer-input').value = '';
+  const loading = appendSpinner();
+  try {
+    const resp = await postChat({
+      message: text,
+      conversation_history: [],
+      corridor_id: appState.corridor_id,
+      flow_mode: 'emergency',
+    });
+    loading.remove();
+    renderEmergencyResponse(resp);
+  } catch (err) {
+    loading.remove();
+    document.getElementById('emer-result').innerHTML = '<p style="color:#e74c3c">Error — please call 112.</p>';
+  }
+}
+
+function renderEmergencyResponse(resp) {
+  const el = document.getElementById('emer-result');
+  el.innerHTML = `<div class="bubble agent">${escHtml(resp.response)}</div>`;
+  if (resp.map_pins && resp.map_pins.length) {
+    el.innerHTML += '<div id="map-container"></div>';
+    initMap('map-container');
+    renderPins(resp.map_pins, 'map-container');
+  }
+  playAudio(resp.response, { auto: true, forceEmergency: true });
+}
+
+// ── Chat response renderer ─────────────────────────────────────────────────
+function handleChatResponse(resp) {
+  appState.conversation_history.push({ role: 'assistant', content: resp.response });
+
+  // Refusal / HITL panels
+  if (resp.refusal && resp.refusal.type) {
+    renderRefusalPanel(resp.refusal, resp.sources || []);
+    if (resp.refusal.type === 'C') {
+      appState.awaitingAck = true;
+      setDockEnabled(false);
+    }
+    return;
+  }
+
+  // Normal agent bubble
+  appendBubble(resp.response, 'agent');
+
+  // Traffic-light cards
+  if (resp.cards && resp.cards.length > 0) {
+    appState.currentCards = resp.cards;
+    appState.currentPins = resp.cards.flatMap(c => c.map_pins || []);
+    appendCards(resp.cards);
+    // Provenance footer only when cards are present (end of intake)
+    if (resp.provenance) {
+      appendProvenance(resp.provenance, resp.sources || []);
+    }
+  }
+
+  if (resp.verification_required) {
+    appState.awaitingAck = true;
+    setDockEnabled(false);
+    // Render amber HITL panel if backend flagged it outside of a refusal.type:'C' response
+    renderRefusalPanel(
+      { type: 'C', reason: (resp.refusal && resp.refusal.reason) || 'This situation needs human verification. Please contact a Common Service Centre (CSC) or call helpline 14434.' },
+      resp.sources || []
+    );
+  }
+}
+
+// ── Bubble helpers ─────────────────────────────────────────────────────────
+function appendBubble(text, role) {
+  const history = document.getElementById('chat-history');
+  const row = document.createElement('div');
+  row.className = `bubble-row ${role}`;
+  const bubble = document.createElement('div');
+  bubble.className = `bubble ${role}`;
+  bubble.textContent = text;
+
+  if (role === 'agent') {
+    const ttsBtn = document.createElement('button');
+    ttsBtn.className = 'tts-btn';
+    ttsBtn.textContent = '🔊';
+    ttsBtn.title = 'Read aloud';
+    ttsBtn.addEventListener('click', () => playManual(text));
+    row.appendChild(ttsBtn);
+  }
+  row.appendChild(bubble);
+  history.appendChild(row);
+  history.scrollTop = history.scrollHeight;
+  return row;
+}
+
+function appendSpinner() {
+  const history = document.getElementById('chat-history');
+  const el = document.createElement('div');
+  el.className = 'spinner';
+  history.appendChild(el);
+  history.scrollTop = history.scrollHeight;
+  return el;
+}
+
+// ── Provenance footer ──────────────────────────────────────────────────────
+function appendProvenance(prov, sources) {
+  const history = document.getElementById('chat-history');
+  const bar = document.createElement('div');
+  bar.className = 'provenance-bar';
+  let html = `<span>✓ Verified against official sources as of ${escHtml(prov.oldest_verified_date)}</span>`;
+  if (sources.length) {
+    html += '<span>' + sources.map(s =>
+      `<a href="${escHtml(s.official_portal)}" target="_blank" rel="noopener">Check current rules (${escHtml(s.scheme_id)}) →</a>`
+    ).join(' ') + '</span>';
+  }
+  if (prov.contains_curated_sample) {
+    html += '<span class="curated-warning">⚠ Some office locations are illustrative sample data. Verify addresses before visiting.</span>';
+  }
+  bar.innerHTML = html;
+  history.appendChild(bar);
+}
+
+// ── Traffic-light cards ────────────────────────────────────────────────────
+function appendCards(cards) {
+  const history = document.getElementById('chat-history');
+  const container = document.createElement('div');
+  container.className = 'cards-container';
+  cards.forEach(card => {
+    const el = document.createElement('div');
+    el.className = `scheme-card ${card.status}`;
+    el.innerHTML = `
+      <div class="card-dot ${card.status}"></div>
+      <div class="card-body">
+        <div class="card-name">${escHtml(card.name)}</div>
+        <div class="card-summary">${escHtml(card.summary)}</div>
+      </div>
+    `;
+    if (card.status !== 'red') {
+      el.addEventListener('click', () => openDetail(card));
+    }
+    container.appendChild(el);
+  });
+  history.appendChild(container);
+  history.scrollTop = history.scrollHeight;
+}
+
+// ── Detail split-view ──────────────────────────────────────────────────────
+function openDetail(card) {
+  document.getElementById('detail-scheme-name').textContent = card.name;
+  document.getElementById('detail-status-dot').className = `card-dot ${card.status}`;
+
+  document.getElementById('detail-detail').textContent = card.detail;
+
+  const checklist = document.getElementById('detail-checklist');
+  checklist.innerHTML = (card.document_checklist || []).map(d => `<li>${escHtml(d)}</li>`).join('');
+
+  const timelineEl = document.getElementById('detail-timeline');
+  timelineEl.innerHTML = '';
+  (card.timeline || []).forEach((step, i) => {
+    const li = document.createElement('li');
+    li.className = 'timeline-item' + (step.has_location ? ' has-location' : '');
+    li.innerHTML = `
+      <div class="step-num">${i + 1}</div>
+      <div class="step-text">${escHtml(step.step)}${step.has_location ? '<span class="step-pin-icon">📍</span>' : ''}</div>
+    `;
+    if (step.has_location && step.pin_ids.length) {
+      li.addEventListener('click', () => updatePins(step.pin_ids));
+    }
+    timelineEl.appendChild(li);
+  });
+
+  // Map — collect all pins for this card
+  const allCardPins = card.map_pins || [];
+  setTimeout(() => {
+    initMap('map-container');
+    renderPins(allCardPins, 'map-container');
+  }, 100);
+
+  showScreen('detail');
+}
+
+document.getElementById('btn-back-detail').addEventListener('click', () => {
+  showScreen('chat');
+});
+
+// ── Refusal / HITL panel ───────────────────────────────────────────────────
+function renderRefusalPanel(refusal, sources) {
+  const history = document.getElementById('chat-history');
+  const panel = document.createElement('div');
+  const typeClass = refusal.type ? `type-${refusal.type.toLowerCase()}` : '';
+  panel.className = `refusal-panel ${typeClass}`;
+
+  let title = '', body = '', extra = '';
+
+  if (refusal.type === 'A') {
+    title = 'Outside Scope';
+    body = refusal.reason;
+  } else if (refusal.type === 'B') {
+    title = 'Scheme Not Covered';
+    body = refusal.reason;
+    if (sources.length) {
+      extra = '<div class="portal-links">' + sources.map(s =>
+        `<a href="${escHtml(s.official_portal)}" target="_blank" rel="noopener">Official portal: ${escHtml(s.scheme_id)} →</a>`
+      ).join('') + '</div>';
+    }
+    extra += '<a href="https://myscheme.gov.in" target="_blank" rel="noopener">Browse all schemes at myscheme.gov.in →</a>';
+  } else if (refusal.type === 'C') {
+    title = '⚠ Human Help Needed';
+    body = refusal.reason;
+    extra = `
+      <p>Helpline: <strong>14434</strong> (toll-free) | Emergency: <strong>112</strong></p>
+      <button class="ack-btn" id="ack-btn">I understand — continue</button>
+    `;
+  }
+
+  panel.innerHTML = `<h4>${escHtml(title)}</h4><p>${escHtml(body)}</p>${extra}`;
+  history.appendChild(panel);
+  history.scrollTop = history.scrollHeight;
+
+  if (refusal.type === 'C') {
+    const ackBtn = document.getElementById('ack-btn');
+    if (ackBtn) {
+      ackBtn.addEventListener('click', () => {
+        appState.awaitingAck = false;
+        setDockEnabled(true);
+        ackBtn.disabled = true;
+        ackBtn.textContent = 'Acknowledged';
+      });
+      playAudio(body, { auto: true });  // Type-C popup auto-play
+    }
+  }
+}
+
+// ── Utility ────────────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}

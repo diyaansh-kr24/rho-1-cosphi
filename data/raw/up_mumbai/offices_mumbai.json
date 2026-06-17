@@ -1,0 +1,127 @@
+{
+  "source_tier": "curated_sample",
+  "disclosure": "Illustrative sample data. Verify current addresses before visiting.",
+  "corridor_id": "up_mumbai",
+  "offices": [
+    {
+      "id": "csc_mum_01",
+      "label": "CSC — Dharavi",
+      "lat": 19.0432,
+      "lng": 72.8544,
+      "address": "Dharavi, Mumbai, Maharashtra 400017",
+      "scheme_id": "eshram"
+    },
+    {
+      "id": "csc_mum_02",
+      "label": "CSC — Kurla",
+      "lat": 19.0728,
+      "lng": 72.8826,
+      "address": "Kurla West, Mumbai, Maharashtra 400070",
+      "scheme_id": "eshram"
+    },
+    {
+      "id": "csc_mum_03",
+      "label": "CSC — Bandra",
+      "lat": 19.0596,
+      "lng": 72.8295,
+      "address": "Bandra West, Mumbai, Maharashtra 400050",
+      "scheme_id": "eshram"
+    },
+    {
+      "id": "csc_mum_04",
+      "label": "CSC — Andheri",
+      "lat": 19.1136,
+      "lng": 72.8697,
+      "address": "Andheri East, Mumbai, Maharashtra 400069",
+      "scheme_id": "eshram"
+    },
+    {
+      "id": "fps_mum_01",
+      "label": "Fair Price Shop — Dharavi",
+      "lat": 19.0450,
+      "lng": 72.8540,
+      "address": "Dharavi Road, Mumbai, Maharashtra 400017",
+      "scheme_id": "onorc"
+    },
+    {
+      "id": "fps_mum_02",
+      "label": "Fair Price Shop — Kurla",
+      "lat": 19.0740,
+      "lng": 72.8810,
+      "address": "Kurla East, Mumbai, Maharashtra 400024",
+      "scheme_id": "onorc"
+    },
+    {
+      "id": "fps_mum_03",
+      "label": "Fair Price Shop — Govandi",
+      "lat": 19.0607,
+      "lng": 72.9218,
+      "address": "Govandi, Mumbai, Maharashtra 400043",
+      "scheme_id": "onorc"
+    },
+    {
+      "id": "hosp_mum_01",
+      "label": "KEM Hospital",
+      "lat": 18.9984,
+      "lng": 72.8410,
+      "address": "Acharya Donde Marg, Parel, Mumbai, Maharashtra 400012",
+      "scheme_id": "pmjay"
+    },
+    {
+      "id": "hosp_mum_02",
+      "label": "Sion Hospital",
+      "lat": 19.0430,
+      "lng": 72.8613,
+      "address": "Sion, Mumbai, Maharashtra 400022",
+      "scheme_id": "pmjay"
+    },
+    {
+      "id": "hosp_mum_03",
+      "label": "Nair Hospital",
+      "lat": 18.9740,
+      "lng": 72.8355,
+      "address": "Dr A L Nair Road, Mumbai Central, Mumbai, Maharashtra 400008",
+      "scheme_id": "pmjay"
+    },
+    {
+      "id": "bank_mum_01",
+      "label": "State Bank of India — Dharavi",
+      "lat": 19.0440,
+      "lng": 72.8550,
+      "address": "90 Feet Road, Dharavi, Mumbai, Maharashtra 400017",
+      "scheme_id": "pmsby"
+    },
+    {
+      "id": "bank_mum_02",
+      "label": "Bank of Maharashtra — Kurla",
+      "lat": 19.0720,
+      "lng": 72.8820,
+      "address": "Kurla West, Mumbai, Maharashtra 400070",
+      "scheme_id": "pmsby"
+    },
+    {
+      "id": "labour_mum_01",
+      "label": "District Labour Office — Mumbai",
+      "lat": 18.9540,
+      "lng": 72.8376,
+      "address": "Worli, Mumbai, Maharashtra 400018",
+      "scheme_id": "bocw"
+    },
+    {
+      "id": "shelter_mum_01",
+      "label": "Night Shelter — CST Railway Station",
+      "lat": 18.9400,
+      "lng": 72.8356,
+      "address": "CST Road, Bori Bunder, Mumbai, Maharashtra 400001",
+      "scheme_id": "emergency"
+    },
+    {
+      "id": "shelter_mum_02",
+      "label": "Migrant Worker Shelter — Dharavi",
+      "lat": 19.0460,
+      "lng": 72.8530,
+      "address": "Dharavi, Mumbai, Maharashtra 400017",
+      "scheme_id": "emergency"
+    }
+  ]
+}
