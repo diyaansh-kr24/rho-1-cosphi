@@ -56,7 +56,7 @@ Open **http://localhost:8000** in your browser.
 ## Locations
 
 | Location | Persona |
-|---|---|---|
+|---|---|
 | `hyd_tg` | Shyam Lal |
 | `mumbai_mh` | Sajid |
 
