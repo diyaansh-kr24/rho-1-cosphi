@@ -153,7 +153,7 @@ const appState = {
   corridor_id: 'bihar_hyd',
   flow_mode: 'planning',
   screen: 'language',
-  voiceoverEnabled: false,
+  voiceoverEnabled: true,
   awaitingAck: false,
   conversation_history: [],
   currentCards: [],       // last set of scheme cards
@@ -227,6 +227,9 @@ document.getElementById('btn-planning').addEventListener('click', () => {
   row.appendChild(ttsBtn);
   row.appendChild(bubble);
   history.appendChild(row);
+
+  // Auto-play welcome message when voiceover is enabled
+  playAudio(welcomeDisplay, { auto: true });
 });
 
 // ── Voiceover toggle ───────────────────────────────────────────────────────
@@ -408,6 +411,9 @@ function handleChatResponse(resp) {
 
   // Normal agent bubble
   appendBubble(resp.response, 'agent');
+
+  // Auto-play TTS for new agent message when voiceover toggle is ON
+  playAudio(resp.response, { auto: true });
 
   // Traffic-light cards
   if (resp.cards && resp.cards.length > 0) {

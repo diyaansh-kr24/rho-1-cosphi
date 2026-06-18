@@ -11,6 +11,7 @@ build/
 venv/
 .venv/
 env/
+CLAUDE.md
 
 # HuggingFace model cache
 ~/.cache/huggingface/

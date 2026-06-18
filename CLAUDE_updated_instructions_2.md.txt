@@ -1,0 +1,18 @@
+Fix the voiceover toggle bug in the Planning flow.
+
+**Context & Bug Description:**
+In the Planning flow, the automatic voiceover toggle is currently non-functional. By design, `appState.voiceoverEnabled` defaults to ON, which should automatically read new chat messages using TTS. Toggling it OFF should restrict TTS to manual 🔊 clicks only. Currently, the system behaves as if it is permanently toggled OFF—automatic TTS never fires, and only manual clicks work. 
+
+**Your Task:**
+Diagnose the disconnect between the UI toggle, the `appState`, and the audio trigger, and implement a concise, targeted fix. 
+
+**Investigation & Implementation Steps:**
+1. **State Mutation (`frontend/js/app.js`):** Check the event listener for the global voiceover toggle button. Ensure it correctly toggles `appState.voiceoverEnabled` and updates the UI accordingly.
+2. **Execution Trigger (`frontend/js/app.js`):** Look at the logic where a new agent message is rendered and appended to the chat. Ensure that `playAudio` (or the equivalent audio trigger) is actually being called with the new message text when `appState.voiceoverEnabled === true`.
+3. **Audio Gating (`frontend/js/audio.js`):** Review the `playAudio(text, {auto})` helper. Verify that it correctly checks the global toggle state for auto-play requests, while still strictly enforcing the rule that Emergency mode auto-play overrides the toggle.
+
+**Strict Constraints:**
+- Do NOT refactor the `appState` machine or the broader audio engine.
+- Keep your changes strictly isolated to fixing this specific state/trigger disconnect.
+- Use Vanilla JS only; do not introduce new paradigms.
+- Verify that your fix does not break the Emergency flow's mandatory auto-play override.
