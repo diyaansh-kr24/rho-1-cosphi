@@ -14,7 +14,7 @@
 
   <!-- ── Screen 1: Language ───────────────────────────────────────────── -->
   <section id="screen-language" class="screen active">
-    <h1>Migrant Worker Navigator</h1>
+    <h1 data-i18n="app_title">Migrant Worker Navigator</h1>
     <p>Choose your language / अपनी भाषा चुनें</p>
     <button id="btn-english" class="lang-btn english">English</button>
     <button id="btn-hindi"   class="lang-btn hindi">हिन्दी</button>
@@ -22,21 +22,21 @@
 
   <!-- ── Screen 2: Triage ─────────────────────────────────────────────── -->
   <section id="screen-triage" class="screen">
-    <h2>Where are you traveling?</h2>
+    <h2 data-i18n="triage_heading">Where are you traveling?</h2>
 
     <div class="corridor-group">
-      <label for="corridor-select">Where are you located now?</label>
+      <label for="corridor-select" data-i18n="corridor_label">Where are you located now?</label>
       <select id="corridor-select" class="corridor-select">
-        <option value="bihar_hyd">Hyderabad (Telangana)</option>
-        <option value="up_mumbai">Mumbai (Maharashtra)</option>
+        <option value="bihar_hyd" data-i18n="corridor_hyd">Hyderabad (Telangana)</option>
+        <option value="up_mumbai" data-i18n="corridor_mum">Mumbai (Maharashtra)</option>
       </select>
     </div>
 
     <div class="triage-btns">
-      <button id="btn-emergency" class="triage-btn emergency">
+      <button id="btn-emergency" class="triage-btn emergency" data-i18n="btn_emergency">
         🔴 Emergency — I need help now
       </button>
-      <button id="btn-planning" class="triage-btn planning">
+      <button id="btn-planning" class="triage-btn planning" data-i18n="btn_planning">
         🔵 Plan my benefits
       </button>
     </div>
@@ -46,16 +46,16 @@
   <section id="screen-emergency" class="screen">
     <div class="emer-header">
       <button class="icon-btn" onclick="showScreen('triage')">←</button>
-      <h2>🔴 Emergency Help</h2>
+      <h2 data-i18n="emer_heading">🔴 Emergency Help</h2>
     </div>
     <div class="emer-input-area">
-      <textarea id="emer-input" placeholder="Describe your emergency — e.g. 'I need a hospital' or 'I have no shelter'"></textarea>
+      <textarea id="emer-input" data-i18n-placeholder="emer_placeholder" placeholder="Describe your emergency — e.g. 'I need a hospital' or 'I have no shelter'"></textarea>
       <div class="emer-pills">
-        <button class="emer-pill medical" data-type="medical" data-msg="I have a medical emergency and need urgent help. What should I do?">🚑 Medical</button>
-        <button class="emer-pill police"  data-type="police"  data-msg="I need police assistance urgently. What should I do?">👮 Police</button>
-        <button class="emer-pill shelter" data-type="shelter" data-msg="I need emergency shelter immediately. What should I do?">🏠 Shelter</button>
+        <button class="emer-pill medical" data-type="medical" data-msg="I have a medical emergency and need urgent help. What should I do?" data-i18n="pill_medical">🚑 Medical</button>
+        <button class="emer-pill police"  data-type="police"  data-msg="I need police assistance urgently. What should I do?" data-i18n="pill_police">👮 Police</button>
+        <button class="emer-pill shelter" data-type="shelter" data-msg="I need emergency shelter immediately. What should I do?" data-i18n="pill_shelter">🏠 Shelter</button>
       </div>
-      <button id="emer-send-btn" class="emer-send-btn">Get Help Now</button>
+      <button id="emer-send-btn" class="emer-send-btn" data-i18n="btn_get_help">Get Help Now</button>
     </div>
     <div id="emer-result"></div>
   </section>
@@ -63,21 +63,22 @@
   <!-- ── Screen 4: Planning / Chat ────────────────────────────────────── -->
   <section id="screen-chat" class="screen">
     <div class="chat-header">
-      <h3>Welfare Navigator</h3>
+      <h3 data-i18n="chat_heading">Welfare Navigator</h3>
       <button id="btn-voiceover" class="icon-btn" title="Toggle voiceover">🔇</button>
-      <button id="btn-reset" class="icon-btn" title="Reset session">↺</button>
+      <button id="btn-reset" class="icon-btn" data-i18n-title="reset_title" title="Reset session">↺</button>
     </div>
 
     <div id="chat-history" class="chat-history"></div>
 
     <div id="input-dock" class="input-dock">
-      <button id="mic-btn" class="icon-btn" title="Speak">🎤</button>
+      <button id="mic-btn" class="icon-btn" data-i18n-title="mic_title" title="Speak">🎤</button>
       <textarea
         id="chat-input"
+        data-i18n-placeholder="chat_placeholder"
         placeholder="Tell me about your situation…"
         rows="1"
       ></textarea>
-      <button id="send-btn" class="send-btn" title="Send">➤</button>
+      <button id="send-btn" class="send-btn" data-i18n-title="send_title" title="Send">➤</button>
     </div>
   </section>
 
@@ -91,22 +92,22 @@
 
     <div class="detail-body">
       <div class="detail-section">
-        <h4>About this scheme</h4>
+        <h4 data-i18n="detail_about">About this scheme</h4>
         <p id="detail-detail"></p>
       </div>
 
       <div class="detail-section">
-        <h4>Documents you will likely need</h4>
+        <h4 data-i18n="detail_docs">Documents you will likely need</h4>
         <ul id="detail-checklist" class="checklist"></ul>
       </div>
 
       <div class="detail-section">
-        <h4>Steps to apply <span style="font-size:.8rem;color:#9e9e9e">(tap 📍 steps to see on map)</span></h4>
+        <h4 data-i18n="detail_steps">Steps to apply <span style="font-size:.8rem;color:#9e9e9e">(tap 📍 steps to see on map)</span></h4>
         <ul id="detail-timeline" class="timeline-list"></ul>
       </div>
 
       <div class="detail-section">
-        <h4>Office locations</h4>
+        <h4 data-i18n="detail_offices">Office locations</h4>
         <div id="map-container"></div>
       </div>
     </div>
