@@ -53,12 +53,12 @@ Open **http://localhost:8000** in your browser.
 - **Embeddings:** `BAAI/bge-small-en-v1.5` via sentence-transformers (CPU)
 - **Audio:** Sarvam AI STT/TTS via `/audio/*` backend proxy
 
-## Corridors
+## Locations
 
-| Corridor | From → To | Persona |
+| Location | Persona |
 |---|---|---|
-| `bihar_hyd` | Bihar → Hyderabad (Telangana) | Shyam Lal |
-| `up_mumbai` | Uttar Pradesh → Mumbai (Maharashtra) | Sajid |
+| `hyd_tg` | Shyam Lal |
+| `mumbai_mh` | Sajid |
 
 ## Schemes
 
