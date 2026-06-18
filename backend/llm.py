@@ -36,7 +36,7 @@ def call_llm(user_message: str, conversation_history: list, retrieved_context: s
                 model=model,
                 messages=messages,
                 temperature=0.2,
-                max_tokens=2048,
+                max_tokens=3072,
             )
             raw = response.choices[0].message.content.strip()
             # Strip markdown fences

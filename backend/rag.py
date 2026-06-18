@@ -81,7 +81,7 @@ def _retrieve(request: ChatRequest, embed_model, collection) -> tuple[list[str],
     q_vec = embed_model.encode(request.message, normalize_embeddings=True).tolist()
     results = collection.query(
         query_embeddings=[q_vec],
-        n_results=6,
+        n_results=8,
         where={"corridor_id": {"$in": allowed}},
         include=["documents", "metadatas"],
     )

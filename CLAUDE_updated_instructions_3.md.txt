@@ -1,0 +1,34 @@
+Refactor the LLM behavioral framework and system prompt to establish a highly strategic, three-phase conversational flow, precise card categorization, and direct user-benefit alignment.
+
+**Target Files:**
+- `backend/prompts/system_prompt.txt` (Primary overhaul)
+- `backend/rag.py` or `backend/llm.py` (Only if minor adjustments are needed to support the prompt integration, keeping the API contract strictly intact)
+
+**Core Architectural Objectives:**
+
+1. **Implement a Dynamic 3-Phase Conversational Engine**
+Modify the system prompt so the LLM looks at the `conversation_history` to track and execute three distinct interaction phases:
+- **Phase 1: Efficient Intake & Need Mapping.** The chatbot must ask targeted, low-friction questions to uncover eligibility variables (age, occupation, current documents) *and* the user's immediate, real-world struggles (e.g., food insecurity, lack of healthcare access, financial strain). It should bundle questions logically to minimize user effort but gather enough text data to evaluate all 5 schemes.
+- **Phase 2: Targeted Dashboard Generation.** Triggered when sufficient info is gathered or a summary is explicitly requested. The LLM must output the structured `cards[]` array matching the §7 API contract.
+- **Phase 3: Strategic Roadmap & Guidance.** Following the dashboard presentation, transition into a guidance mode. The chatbot must provide a closing narrative summarizing what benefits they are currently missing out on, how immediate action on "Green" schemes solves their pressing needs, and how they can use those first steps to acquire documents that unlock "Red" schemes later.
+
+2. **Redefine the Traffic-Light Logic (`cards[].status`)**
+Re-engineer the model's evaluation framework to align with these specific criteria:
+- 🟢 **Green (Eligible):** Fully qualifies right now with existing documentation.
+- 🟡 **Yellow (Verify):** Ambiguous fit, policy edge case, or requires verification at an official center (triggers `verification_required: true` if severe).
+- 🔴 **Red (Actionable Barrier):** The user *would* be eligible if they took a highly specific, doable action (e.g., linking Aadhaar to a mobile number, registering for an e-Shram card, or obtaining a portable ration card). 
+
+3. **Enforce Scheme Dependency Mapping**
+The system prompt must strictly enforce the hub-and-spoke model outlined in `CLAUDE.md` (§4). If a user lacks an e-Shram card, the downstream schemes (PMSBY, PMJAY, PM_SYM) are gated. For Red cards representing downstream schemes, the text must explicitly state: "This will unlock as soon as you complete your e-Shram registration."
+
+4. **Shift from Generic Rambling to "Direct-Value" Language**
+Ban generic placeholder text (e.g., "This scheme has various benefits"). Force the LLM to dynamically inject the *exact tangible value* of the scheme mapped directly to the user's stated needs:
+- *Instead of:* "PMJAY gives you healthcare coverage."
+- *Use:* "Since you mentioned being worried about hospital costs for your family, PMJAY gives you up to ₹5 Lakhs of completely free, cashless treatment at any empanelled hospital in Hyderabad."
+
+**Strict Constraints & Compliance:**
+- **Zero Schema Leakage:** You must strictly preserve the existing Pydantic `POST /chat` input/output contract defined in §7 of CLAUDE.md. Do not alter field names or structures.
+- **Deterministic Separation:** The LLM must continue to reason over text *only*. It must never calculate dates, counts, or manipulate map pins via text; those must remain handled by the Python backend pipeline.
+- **Tone:** Keep the tone empathetic, plain-spoken (optimized for eventual audio translation), highly practical, and framed with appropriate uncertainty ("you may be eligible").
+
+Review the existing `backend/prompts/system_prompt.txt`, rewrite it completely to fulfill this strategic behavior, and verify the structured output parsing still functions perfectly.
