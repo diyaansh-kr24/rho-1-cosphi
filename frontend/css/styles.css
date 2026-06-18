@@ -310,3 +310,31 @@ html, body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .hidden { display: none !important; }
+
+/* ── Emergency mode — chat header variant ────────────────────────────────── */
+.chat-header.emergency-mode {
+  background: linear-gradient(135deg, #1a0a0a, #2c1010);
+  border-bottom-color: #c0392b;
+}
+.chat-header.emergency-mode h3 { color: #e74c3c; }
+
+/* ── Emergency inline pills (inside chat history) ────────────────────────── */
+.emer-pills-inline {
+  display: flex; gap: 10px; padding: 4px 0; width: 100%;
+}
+.emer-pills-inline .emer-pill-chat {
+  flex: 1; border: none; border-radius: 20px;
+  padding: 10px 0; font-size: .9rem; font-weight: 700;
+  cursor: pointer; transition: transform .1s, opacity .15s;
+}
+.emer-pills-inline .emer-pill-chat.medical { background: #922b21; color: #fff; }
+.emer-pills-inline .emer-pill-chat.police  { background: #1a5276; color: #fff; }
+.emer-pills-inline .emer-pill-chat.shelter { background: #1e8449; color: #fff; }
+.emer-pills-inline .emer-pill-chat:active { transform: scale(.94); opacity: .75; }
+
+/* ── Emergency inline map (inside chat history) ──────────────────────────── */
+.emer-map-inline {
+  height: 240px; border-radius: var(--radius); overflow: hidden;
+  background: var(--surface); margin-top: 8px; width: 100%;
+}
+

@@ -20,6 +20,9 @@ const i18n = {
     pill_shelter: '🏠 Shelter',
     btn_get_help: 'Get Help Now',
     emer_error: 'Error — please call 112.',
+    emer_chat_heading: '🔴 Emergency Help',
+    emer_welcome: 'I am here to help you. Tell me what is happening, or tap a button below for quick help.',
+    emer_welcome_hi: 'मैं आपकी मदद के लिए यहाँ हूँ। बताएं क्या हो रहा है, या जल्दी मदद के लिए नीचे बटन दबाएं।',
 
     // Chat screen
     chat_heading: 'Welfare Navigator',
@@ -78,6 +81,9 @@ const i18n = {
     pill_shelter: '🏠 आश्रय',
     btn_get_help: 'अभी मदद लें',
     emer_error: 'त्रुटि — कृपया 112 पर कॉल करें।',
+    emer_chat_heading: '🔴 आपातकालीन सहायता',
+    emer_welcome: 'मैं आपकी मदद के लिए यहाँ हूँ। बताएं क्या हो रहा है, या जल्दी मदद के लिए नीचे बटन दबाएं।',
+    emer_welcome_hi: 'मैं आपकी मदद के लिए यहाँ हूँ। बताएं क्या हो रहा है, या जल्दी मदद के लिए नीचे बटन दबाएं।',
 
     // Chat screen
     chat_heading: 'कल्याण नेविगेटर',
@@ -188,8 +194,27 @@ document.getElementById('corridor-select').addEventListener('change', e => {
 
 document.getElementById('btn-emergency').addEventListener('click', () => {
   appState.flow_mode = 'emergency';
-  clearChat();
-  showScreen('emergency');
+  appState.conversation_history = [];
+  appState.currentCards = [];
+  appState.currentPins = [];
+  appState.awaitingAck = false;
+  document.getElementById('chat-history').innerHTML = '';
+  setDockEnabled(true);
+  setEmergencyMode(true);
+  showScreen('chat');
+
+  // Emergency welcome message
+  const welcomeEn = i18n.en.emer_welcome;
+  appState.conversation_history.push({ role: 'assistant', content: welcomeEn });
+
+  const welcomeDisplay = appState.language === 'hi' ? t('emer_welcome_hi') : t('emer_welcome');
+  appendBubble(welcomeDisplay, 'agent');
+
+  // Render inline quick-action pills in the chat history
+  appendEmergencyPills();
+
+  // Auto-play welcome — emergency override ensures it always plays
+  playAudio(welcomeDisplay, { auto: true, forceEmergency: true });
 });
 
 document.getElementById('btn-planning').addEventListener('click', () => {
@@ -200,6 +225,7 @@ document.getElementById('btn-planning').addEventListener('click', () => {
   appState.awaitingAck = false;
   document.getElementById('chat-history').innerHTML = '';
   setDockEnabled(true);
+  setEmergencyMode(false);
   showScreen('chat');
 
   // Welcome message: always store the English version in conversation_history
@@ -269,6 +295,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   appState.currentCards = [];
   appState.currentPins = [];
   appState.awaitingAck = false;
+  setEmergencyMode(false);
   clearChat();
   showScreen('language');
 });
@@ -325,74 +352,80 @@ async function sendMessage() {
   }
 }
 
-// ── Emergency screen ───────────────────────────────────────────────────────
+// ── Emergency mode helpers ─────────────────────────────────────────────────
 let _emerPillType = null;
 
+// Legacy: the old emergency screen pills still exist in the DOM.
+// Attach listeners so they work if someone ever navigates there,
+// but the primary path now uses the chat-embedded pills.
 document.querySelectorAll('.emer-pill').forEach(pill => {
   pill.addEventListener('click', () => {
-    document.getElementById('emer-input').value = pill.dataset.msg;
-    _emerPillType = pill.dataset.type;
-    pill.classList.add('pressed');
-    setTimeout(() => pill.classList.remove('pressed'), 300);
-    sendEmergency();
+    // If we're on the chat screen in emergency mode, route through sendMessage
+    if (appState.screen === 'chat' && appState.flow_mode === 'emergency') {
+      const chatInput = document.getElementById('chat-input');
+      chatInput.value = pill.dataset.msg;
+      _emerPillType = pill.dataset.type;
+      sendMessage();
+      return;
+    }
   });
 });
 
-document.getElementById('emer-send-btn').addEventListener('click', sendEmergency);
-document.getElementById('emer-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendEmergency(); }
-});
-
-async function sendEmergency() {
-  const text = document.getElementById('emer-input').value.trim();
-  if (!text) return;
-  document.getElementById('emer-input').value = '';
-  const loading = appendSpinner();
-  try {
-    const resp = await postChat({
-      message: text,
-      conversation_history: [],
-      corridor_id: appState.corridor_id,
-      flow_mode: 'emergency',
-    });
-    loading.remove();
-    renderEmergencyResponse(resp);
-  } catch (err) {
-    loading.remove();
-    document.getElementById('emer-result').innerHTML = '<p style="color:#e74c3c">' + escHtml(t('emer_error')) + '</p>';
+// Toggle the chat header between normal and emergency styling
+function setEmergencyMode(active) {
+  const header = document.querySelector('.chat-header');
+  const heading = header ? header.querySelector('h3') : null;
+  if (active) {
+    header && header.classList.add('emergency-mode');
+    if (heading) heading.textContent = t('emer_chat_heading');
+  } else {
+    header && header.classList.remove('emergency-mode');
+    if (heading) heading.textContent = t('chat_heading');
   }
 }
 
-function renderEmergencyResponse(resp) {
-  const el = document.getElementById('emer-result');
+// Render inline quick-action pills inside the chat history
+function appendEmergencyPills() {
+  const history = document.getElementById('chat-history');
+  const container = document.createElement('div');
+  container.className = 'emer-pills-inline';
 
-  // Format bullet-point response as a styled list
-  const lines = (resp.response || '').split('\n').filter(l => l.trim());
-  const formatted = lines.map(l => {
-    const text = l.replace(/^•\s*/, '');
-    return `<li>${escHtml(text)}</li>`;
-  }).join('');
-  el.innerHTML = `<ul class="emer-bullets">${formatted || '<li>' + escHtml(resp.response) + '</li>'}</ul>`;
+  const pillData = [
+    { type: 'medical', msg: 'I have a medical emergency and need urgent help. What should I do?', labelKey: 'pill_medical', cls: 'medical' },
+    { type: 'police',  msg: 'I need police assistance urgently. What should I do?',             labelKey: 'pill_police',  cls: 'police'  },
+    { type: 'shelter', msg: 'I need emergency shelter immediately. What should I do?',          labelKey: 'pill_shelter', cls: 'shelter' },
+  ];
 
-  // Filter pins by pill type if a pill was tapped
-  let pins = resp.map_pins || [];
-  if (_emerPillType && pins.length) {
-    pins = pins.filter(p => p.emergency_category === _emerPillType);
-  }
-  _emerPillType = null;
+  pillData.forEach(pd => {
+    const btn = document.createElement('button');
+    btn.className = `emer-pill-chat ${pd.cls}`;
+    btn.textContent = t(pd.labelKey);
+    btn.addEventListener('click', () => {
+      _emerPillType = pd.type;
+      document.getElementById('chat-input').value = pd.msg;
+      sendMessage();
+    });
+    container.appendChild(btn);
+  });
 
-  if (pins.length) {
-    const mapDiv = document.createElement('div');
-    mapDiv.id = 'emer-map';
-    mapDiv.className = 'emer-map';
-    el.appendChild(mapDiv);
-    setTimeout(() => {
-      initMap('emer-map');
-      renderPins(pins, 'emer-map');
-    }, 80);
-  }
+  history.appendChild(container);
+  history.scrollTop = history.scrollHeight;
+}
 
-  playAudio(resp.response, { auto: true, forceEmergency: true });
+// Render an inline map within the chat history (for emergency responses)
+function appendInlineMap(pins) {
+  if (!pins || !pins.length) return;
+  const history = document.getElementById('chat-history');
+  const mapId = 'emer-map-' + Date.now();
+  const mapDiv = document.createElement('div');
+  mapDiv.id = mapId;
+  mapDiv.className = 'emer-map-inline';
+  history.appendChild(mapDiv);
+  history.scrollTop = history.scrollHeight;
+  setTimeout(() => {
+    initMap(mapId);
+    renderPins(pins, mapId);
+  }, 80);
 }
 
 // ── Chat response renderer ─────────────────────────────────────────────────
@@ -411,6 +444,23 @@ function handleChatResponse(resp) {
 
   // Normal agent bubble
   appendBubble(resp.response, 'agent');
+
+  // ── Emergency-specific: inline map + auto-play with safety override ──
+  if (appState.flow_mode === 'emergency') {
+    // Filter pins by pill type if a pill was tapped
+    let pins = resp.map_pins || [];
+    if (_emerPillType && pins.length) {
+      pins = pins.filter(p => p.emergency_category === _emerPillType);
+    }
+    _emerPillType = null;
+
+    // Render inline map in chat feed
+    appendInlineMap(pins);
+
+    // Emergency auto-play — safety override, always plays
+    playAudio(resp.response, { auto: true, forceEmergency: true });
+    return;
+  }
 
   // Auto-play TTS for new agent message when voiceover toggle is ON
   playAudio(resp.response, { auto: true });

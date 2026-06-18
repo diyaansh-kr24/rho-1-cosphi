@@ -1,0 +1,28 @@
+Overhaul the Emergency flow to implement a rapid, multi-turn, empathetic crisis triage system with active panic-detection.
+
+**Context & Objective:**
+Currently, the Emergency flow has interactive elements (maps, buttons) but behaves too much like a single-turn search. It needs to be upgraded into a hyper-efficient conversational flow where the bot acts as a calming, focused crisis responder. It must understand the emergency in as few turns as possible, detect and mitigate panic, and then seamlessly deploy the map and summary guidance.
+
+**Target Files:**
+- `backend/prompts/system_prompt.txt` (To define the Emergency persona and multi-turn rules)
+- `frontend/js/app.js` (To ensure Emergency mode supports full conversational chat bubbles, integrating the map and buttons into the chat flow rather than a static screen)
+
+**Core Architectural Objectives:**
+
+1. **Implement an "Emergency Mode" LLM Persona (`system_prompt.txt`)**
+Add a strict behavioral fork in the system prompt triggered when `flow_mode == "emergency"`. The LLM must adhere to these crisis guidelines:
+- **Rapid Triage:** Do not probe deeply. Ask a maximum of ONE highly targeted question only if the user's initial input is too vague to route to a physical service. If the need is clear (e.g., "I cut my hand badly"), skip probing and immediately provide action steps.
+- **Active Panic Detection & De-escalation:** The LLM must monitor the `conversation_history` for signs of panic (exclamation marks, erratic typing, words like "help," "scared," "bleeding"). If detected, the response MUST begin with a brief grounding, empathetic statement (e.g., "I am here with you. Take a slow breath. Help is available nearby.") before delivering instructions.
+- **Continuous Gentle Guidance:** After the initial map and summary are provided, keep the conversational context open. Offer short, reassuring follow-up guidance (e.g., "Are you on your way to the hospital? Let me know if you need the address read out loud again.") while continuously monitoring mental state.
+
+2. **Refine Frontend Conversational Integration (`frontend/js/app.js`)**
+Ensure the Emergency screen isn't just a single-input search box. It must utilize the same multi-turn chat bubble UI as the Planning flow, but styled appropriately. 
+- The user's input and bot's calming responses should stack as chat history.
+- The map and emergency action buttons should render immediately below the bot's substantive response in the chat feed.
+
+3. **Strict Data Contract & Audio Constraints**
+- Keep the `POST /chat` contract intact. For Emergency mode, `cards[]` MUST remain completely empty.
+- Map logic remains deterministic: Python injects `map_pins` from the curated JSON files. The LLM must not try to invent coordinates or physical addresses; it should only reference that "locations are marked on the map below."
+- **Audio Rule:** Verify that this UI overhaul does NOT break the mandatory audio safety override. As per the spec, TTS auto-play must remain LOCKED ON for every bot message in the Emergency flow.
+
+Review `system_prompt.txt` to inject this crisis logic cleanly alongside the newly updated Planning logic, and adjust the frontend UI state machine so Emergency mode feels like a supportive, continuous chat.
