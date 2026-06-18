@@ -30,6 +30,7 @@ class MapPin(BaseModel):
     lat: float
     lng: float
     address: str
+    emergency_category: Optional[str] = None  # medical | police | shelter (emergency pins only)
 
 
 class TimelineStep(BaseModel):
@@ -63,5 +64,6 @@ class ChatResponse(BaseModel):
     sources: list[Source]
     provenance: Provenance
     cards: list[SchemeCard]
+    map_pins: list[MapPin] = []  # top-level pins for emergency mode
     flow_mode: str            # emergency | planning | out_of_scope
     refusal: Refusal

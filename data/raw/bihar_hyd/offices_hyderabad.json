@@ -108,20 +108,67 @@
       "scheme_id": "bocw"
     },
     {
-      "id": "shelter_hyd_01",
-      "label": "Night Shelter — Secunderabad",
-      "lat": 17.4399,
-      "lng": 78.4900,
-      "address": "Railway Station Area, Secunderabad, Telangana 500003",
-      "scheme_id": "emergency"
+      "id": "emer_hosp_hyd_01",
+      "label": "🏥 Osmania General Hospital — Emergency",
+      "lat": 17.3786,
+      "lng": 78.4750,
+      "address": "Afzal Gunj, Hyderabad, Telangana 500012. Ph: 040-24600121",
+      "scheme_id": "emergency",
+      "emergency_category": "medical"
     },
     {
-      "id": "shelter_hyd_02",
-      "label": "Migrant Worker Shelter — Charminar",
-      "lat": 17.3570,
-      "lng": 78.4730,
-      "address": "Charminar Area, Hyderabad Old City, Telangana 500002",
-      "scheme_id": "emergency"
+      "id": "emer_hosp_hyd_02",
+      "label": "🏥 Gandhi General Hospital — Emergency",
+      "lat": 17.3850,
+      "lng": 78.4867,
+      "address": "Gandhi Hospital Road, Musheerabad, Secunderabad, Telangana 500003",
+      "scheme_id": "emergency",
+      "emergency_category": "medical"
+    },
+    {
+      "id": "emer_hosp_hyd_03",
+      "label": "🏥 Niloufer Hospital — Emergency",
+      "lat": 17.3922,
+      "lng": 78.4748,
+      "address": "King Koti Road, Abids, Hyderabad, Telangana 500001",
+      "scheme_id": "emergency",
+      "emergency_category": "medical"
+    },
+    {
+      "id": "emer_police_hyd_01",
+      "label": "👮 Afzalgunj Police Station",
+      "lat": 17.3716,
+      "lng": 78.4798,
+      "address": "Near Osmania General Hospital, Afzal Gunj, Hyderabad, Telangana 500012",
+      "scheme_id": "emergency",
+      "emergency_category": "police"
+    },
+    {
+      "id": "emer_police_hyd_02",
+      "label": "👮 Begumpet Police Station",
+      "lat": 17.4451,
+      "lng": 78.4655,
+      "address": "Sardar Patel Main Road, opposite Splendid Towers, Begumpet, Hyderabad, Telangana 500016",
+      "scheme_id": "emergency",
+      "emergency_category": "police"
+    },
+    {
+      "id": "emer_shelter_hyd_01",
+      "label": "🏠 Sayodhya GHMC Night Shelter — Amberpet",
+      "lat": 17.3926,
+      "lng": 78.5279,
+      "address": "GHMC Community Hall, opposite D-Mart, Kamala Nagar, Golnaka, Amberpet, Hyderabad 500013. Helpline: 18005991811 (toll-free)",
+      "scheme_id": "emergency",
+      "emergency_category": "shelter"
+    },
+    {
+      "id": "emer_shelter_hyd_02",
+      "label": "🏠 Aman Vedika Shelter — Begumpet",
+      "lat": 17.4461,
+      "lng": 78.4609,
+      "address": "Near Begumpet Flyover, Hyderabad, Telangana 500016. Urban homeless shelter, 60 beds",
+      "scheme_id": "emergency",
+      "emergency_category": "shelter"
     }
   ]
 }

@@ -42,8 +42,32 @@ document.getElementById('btn-emergency').addEventListener('click', () => {
 
 document.getElementById('btn-planning').addEventListener('click', () => {
   appState.flow_mode = 'planning';
-  clearChat();
+  appState.conversation_history = [];
+  appState.currentCards = [];
+  appState.currentPins = [];
+  appState.awaitingAck = false;
+  document.getElementById('chat-history').innerHTML = '';
+  setDockEnabled(true);
   showScreen('chat');
+
+  var loc = appState.corridor_id === 'bihar_hyd' ? 'Hyderabad, Telangana' : 'Mumbai, Maharashtra';
+  var welcome = 'Namaste! I am your Welfare Navigator. I see that you are currently located in ' + loc + ' and I can help you check your eligibility and apply for government benefits and schemes relevant to you. To get started, tell me a little about your situation. What kind of work or labour do you currently do?';
+  appState.conversation_history.push({ role: 'assistant', content: welcome });
+
+  var history = document.getElementById('chat-history');
+  var row = document.createElement('div');
+  row.className = 'bubble-row agent';
+  var ttsBtn = document.createElement('button');
+  ttsBtn.className = 'tts-btn';
+  ttsBtn.textContent = '🔊';
+  ttsBtn.title = 'Read aloud';
+  ttsBtn.addEventListener('click', function() { playManual(welcome); });
+  var bubble = document.createElement('div');
+  bubble.className = 'bubble agent';
+  bubble.textContent = welcome;
+  row.appendChild(ttsBtn);
+  row.appendChild(bubble);
+  history.appendChild(row);
 });
 
 // ── Voiceover toggle ───────────────────────────────────────────────────────
@@ -140,6 +164,18 @@ async function sendMessage() {
 }
 
 // ── Emergency screen ───────────────────────────────────────────────────────
+let _emerPillType = null;
+
+document.querySelectorAll('.emer-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.getElementById('emer-input').value = pill.dataset.msg;
+    _emerPillType = pill.dataset.type;
+    pill.classList.add('pressed');
+    setTimeout(() => pill.classList.remove('pressed'), 300);
+    sendEmergency();
+  });
+});
+
 document.getElementById('emer-send-btn').addEventListener('click', sendEmergency);
 document.getElementById('emer-input').addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendEmergency(); }
@@ -167,12 +203,33 @@ async function sendEmergency() {
 
 function renderEmergencyResponse(resp) {
   const el = document.getElementById('emer-result');
-  el.innerHTML = `<div class="bubble agent">${escHtml(resp.response)}</div>`;
-  if (resp.map_pins && resp.map_pins.length) {
-    el.innerHTML += '<div id="map-container"></div>';
-    initMap('map-container');
-    renderPins(resp.map_pins, 'map-container');
+
+  // Format bullet-point response as a styled list
+  const lines = (resp.response || '').split('\n').filter(l => l.trim());
+  const formatted = lines.map(l => {
+    const text = l.replace(/^•\s*/, '');
+    return `<li>${escHtml(text)}</li>`;
+  }).join('');
+  el.innerHTML = `<ul class="emer-bullets">${formatted || '<li>' + escHtml(resp.response) + '</li>'}</ul>`;
+
+  // Filter pins by pill type if a pill was tapped
+  let pins = resp.map_pins || [];
+  if (_emerPillType && pins.length) {
+    pins = pins.filter(p => p.emergency_category === _emerPillType);
   }
+  _emerPillType = null;
+
+  if (pins.length) {
+    const mapDiv = document.createElement('div');
+    mapDiv.id = 'emer-map';
+    mapDiv.className = 'emer-map';
+    el.appendChild(mapDiv);
+    setTimeout(() => {
+      initMap('emer-map');
+      renderPins(pins, 'emer-map');
+    }, 80);
+  }
+
   playAudio(resp.response, { auto: true, forceEmergency: true });
 }
 

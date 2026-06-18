@@ -25,10 +25,10 @@
     <h2>Where are you traveling?</h2>
 
     <div class="corridor-group">
-      <label for="corridor-select">Select your route</label>
+      <label for="corridor-select">Where are you located now?</label>
       <select id="corridor-select" class="corridor-select">
-        <option value="bihar_hyd">Bihar → Hyderabad (Telangana) — Shyam Lal</option>
-        <option value="up_mumbai">Uttar Pradesh → Mumbai (Maharashtra) — Sajid</option>
+        <option value="bihar_hyd">Hyderabad (Telangana)</option>
+        <option value="up_mumbai">Mumbai (Maharashtra)</option>
       </select>
     </div>
 
@@ -50,6 +50,11 @@
     </div>
     <div class="emer-input-area">
       <textarea id="emer-input" placeholder="Describe your emergency — e.g. 'I need a hospital' or 'I have no shelter'"></textarea>
+      <div class="emer-pills">
+        <button class="emer-pill medical" data-type="medical" data-msg="I have a medical emergency and need urgent help. What should I do?">🚑 Medical</button>
+        <button class="emer-pill police"  data-type="police"  data-msg="I need police assistance urgently. What should I do?">👮 Police</button>
+        <button class="emer-pill shelter" data-type="shelter" data-msg="I need emergency shelter immediately. What should I do?">🏠 Shelter</button>
+      </div>
       <button id="emer-send-btn" class="emer-send-btn">Get Help Now</button>
     </div>
     <div id="emer-result"></div>
@@ -58,7 +63,6 @@
   <!-- ── Screen 4: Planning / Chat ────────────────────────────────────── -->
   <section id="screen-chat" class="screen">
     <div class="chat-header">
-      <button class="icon-btn" onclick="showScreen('triage')">←</button>
       <h3>Welfare Navigator</h3>
       <button id="btn-voiceover" class="icon-btn" title="Toggle voiceover">🔇</button>
       <button id="btn-reset" class="icon-btn" title="Reset session">↺</button>
@@ -107,6 +111,7 @@
       </div>
     </div>
   </section>
+
 
 </div><!-- #app-root -->
 

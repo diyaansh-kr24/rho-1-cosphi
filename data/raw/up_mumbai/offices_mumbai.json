@@ -108,20 +108,67 @@
       "scheme_id": "bocw"
     },
     {
-      "id": "shelter_mum_01",
-      "label": "Night Shelter — CST Railway Station",
-      "lat": 18.9400,
-      "lng": 72.8356,
-      "address": "CST Road, Bori Bunder, Mumbai, Maharashtra 400001",
-      "scheme_id": "emergency"
+      "id": "emer_hosp_mum_01",
+      "label": "🏥 KEM Hospital — Emergency",
+      "lat": 18.9984,
+      "lng": 72.8410,
+      "address": "Acharya Donde Marg, Parel, Mumbai, Maharashtra 400012. Ph: 022-24107000",
+      "scheme_id": "emergency",
+      "emergency_category": "medical"
     },
     {
-      "id": "shelter_mum_02",
-      "label": "Migrant Worker Shelter — Dharavi",
-      "lat": 19.0460,
+      "id": "emer_hosp_mum_02",
+      "label": "🏥 Nair Hospital — Emergency",
+      "lat": 18.9740,
+      "lng": 72.8355,
+      "address": "Dr A L Nair Road, Mumbai Central, Mumbai, Maharashtra 400008. Ph: 022-23027000",
+      "scheme_id": "emergency",
+      "emergency_category": "medical"
+    },
+    {
+      "id": "emer_hosp_mum_03",
+      "label": "🏥 Sion Hospital — Emergency",
+      "lat": 19.0430,
+      "lng": 72.8613,
+      "address": "Dr Babasaheb Ambedkar Marg, Sion (West), Mumbai, Maharashtra 400022. Ph: 022-24076381",
+      "scheme_id": "emergency",
+      "emergency_category": "medical"
+    },
+    {
+      "id": "emer_police_mum_01",
+      "label": "👮 Dharavi Police Station",
+      "lat": 19.0402,
       "lng": 72.8530,
-      "address": "Dharavi, Mumbai, Maharashtra 400017",
-      "scheme_id": "emergency"
+      "address": "90 Feet Road, Sion Dharavi, Transit Camp, Rajiv Gandhi Nagar, Dharavi, Mumbai 400017",
+      "scheme_id": "emergency",
+      "emergency_category": "police"
+    },
+    {
+      "id": "emer_police_mum_02",
+      "label": "👮 Bandra Police Station",
+      "lat": 19.0597,
+      "lng": 72.8397,
+      "address": "577, SV Road, Bandra West, Mumbai, Maharashtra 400050",
+      "scheme_id": "emergency",
+      "emergency_category": "police"
+    },
+    {
+      "id": "emer_shelter_mum_01",
+      "label": "🏠 MCGM Urban Homeless Shelter — Dharavi",
+      "lat": 19.0450,
+      "lng": 72.8540,
+      "address": "Dharavi Road, Mumbai, Maharashtra 400017 (MCGM-run night shelter)",
+      "scheme_id": "emergency",
+      "emergency_category": "shelter"
+    },
+    {
+      "id": "emer_shelter_mum_02",
+      "label": "🏠 MCGM Night Shelter — Bori Bunder",
+      "lat": 18.9400,
+      "lng": 72.8356,
+      "address": "CST Road, Bori Bunder, Mumbai, Maharashtra 400001 (Municipal Corporation shelter)",
+      "scheme_id": "emergency",
+      "emergency_category": "shelter"
     }
   ]
 }

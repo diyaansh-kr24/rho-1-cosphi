@@ -90,6 +90,12 @@ def _retrieve(request: ChatRequest, embed_model, collection) -> tuple[list[str],
     return docs, metas
 
 
+_CORRIDOR_DESTINATION = {
+    "bihar_hyd": "Hyderabad, Telangana",
+    "up_mumbai": "Mumbai, Maharashtra",
+}
+
+
 # ── Step 3: Synthesize ────────────────────────────────────────────────────────
 
 def _synthesize(request: ChatRequest, docs: list[str], metas: list[dict]) -> dict:
@@ -98,7 +104,8 @@ def _synthesize(request: ChatRequest, docs: list[str], metas: list[dict]) -> dic
         f"[{m.get('scheme_id', 'unknown')} | corridor={m.get('corridor_id')}]\n{d}"
         for d, m in zip(docs, metas)
     )
-    flow_hint = f"[flow_mode: {request.flow_mode}]"
+    destination = _CORRIDOR_DESTINATION.get(request.corridor_id, "")
+    flow_hint = f"[flow_mode: {request.flow_mode}] [worker current location: {destination}]"
     augmented_msg = f"{flow_hint} {request.message}"
     return call_llm(augmented_msg, request.conversation_history, context)
 
@@ -172,9 +179,11 @@ def _assemble(
 
     # Emergency: empty cards, crisis mode
     if route["is_emergency"]:
-        # Provide emergency pins (shelter/hospital) from curated JSON
         emergency_pins = [
-            MapPin(id=o["id"], label=o["label"], lat=o["lat"], lng=o["lng"], address=o["address"])
+            MapPin(
+                id=o["id"], label=o["label"], lat=o["lat"], lng=o["lng"], address=o["address"],
+                emergency_category=o.get("emergency_category"),
+            )
             for o in offices if o.get("scheme_id") == "emergency"
         ]
         return ChatResponse(
@@ -184,6 +193,7 @@ def _assemble(
             sources=[],
             provenance=Provenance(**prov_data["provenance"]),
             cards=[],
+            map_pins=emergency_pins,
             flow_mode="emergency",
             refusal=Refusal(type=None, reason=""),
         )
@@ -198,6 +208,7 @@ def _assemble(
             sources=[Source(**s) for s in prov_data["sources"]] if rtype == "B" else [],
             provenance=Provenance(**prov_data["provenance"]),
             cards=[],
+            map_pins=[],
             flow_mode="out_of_scope",
             refusal=Refusal(type=rtype, reason=final_refusal["reason"]),
         )

@@ -269,9 +269,37 @@ html, body {
   background: var(--card-bg); color: var(--text);
   padding: 12px; font-size: 1rem; font-family: inherit; resize: none; min-height: 80px;
 }
+.emer-pills {
+  display: flex; gap: 10px;
+}
+.emer-pill {
+  flex: 1; border: none; border-radius: 20px;
+  padding: 10px 0; font-size: .9rem; font-weight: 700;
+  cursor: pointer; transition: transform .1s, opacity .15s;
+}
+.emer-pill.medical { background: #922b21; color: #fff; }
+.emer-pill.police  { background: #1a5276; color: #fff; }
+.emer-pill.shelter { background: #1e8449; color: #fff; }
+.emer-pill:active, .emer-pill.pressed { transform: scale(.94); opacity: .75; }
+
 .emer-send-btn {
   background: #c0392b; color: #fff; border: none;
   border-radius: 10px; padding: 14px; font-size: 1rem; font-weight: 700; cursor: pointer;
+}
+
+/* ── Emergency response bullets + map ────────────────────────────────────── */
+.emer-bullets {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.emer-bullets li {
+  background: var(--card-bg); border-left: 4px solid #e74c3c;
+  border-radius: 8px; padding: 12px 14px;
+  font-size: 1rem; font-weight: 600; line-height: 1.4;
+}
+.emer-map {
+  height: 260px; border-radius: var(--radius); overflow: hidden;
+  background: var(--surface); margin-top: 12px;
 }
 
 /* ── Utility ──────────────────────────────────────────────────────────────── */
