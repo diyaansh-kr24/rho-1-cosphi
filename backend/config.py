@@ -5,11 +5,14 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+PRIMARY_API_KEY = os.getenv("PRIMARY_API_KEY", "")
 SARVAM_API_KEY = os.getenv("SARVAM_API_KEY", "")
 
 
 def validate_keys():
     """Call this at server startup (main.py lifespan). Not needed by ingest.py."""
+    if not PRIMARY_API_KEY:
+        raise RuntimeError("PRIMARY_API_KEY is not set. Copy .env.example to .env and fill in your key.")
     if not GROQ_API_KEY:
         raise RuntimeError("GROQ_API_KEY is not set. Copy .env.example to .env and fill in your key.")
     if not SARVAM_API_KEY:
@@ -25,9 +28,11 @@ PROMPTS_DIR = BASE_DIR / "backend" / "prompts"
 OFFICES_HYDERABAD = DATA_DIR / "raw" / "bihar_hyd" / "offices_hyderabad.json"
 OFFICES_MUMBAI = DATA_DIR / "raw" / "up_mumbai" / "offices_mumbai.json"
 
-# LLM models — primary + fallback
-LLM_PRIMARY = "llama-3.3-70b-versatile"
-LLM_FALLBACK = "llama-3.1-8b-instant"
+# LLM models — primary (DeepSeek V3.2 via aicredits.in) + fallback (Groq 70B instruct on rate limit)
+LLM_PRIMARY  = "deepseek/deepseek-v3.2"
+LLM_FALLBACK = "llama-3.3-70b-versatile"
+
+PRIMARY_BASE_URL = "https://aicredits.in/v1"
 
 # ChromaDB
 CHROMA_COLLECTION = "migrant_schemes"

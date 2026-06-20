@@ -1,0 +1,41 @@
+{
+  "type_c": {
+    "medical_emergency": [
+      "I am injured and bleeding badly",
+      "I was badly injured while working and need urgent help now",
+      "My chest hurts and I cannot breathe properly",
+      "Someone collapsed and is unconscious next to me",
+      "I think I am having a heart attack",
+      "I fell from the scaffolding and I am in severe pain",
+      "There was an accident and I am badly hurt",
+      "I cannot move my leg and there is a lot of blood"
+    ],
+    "document_crisis": [
+      "All my papers and identity proof were stolen and I am completely stranded",
+      "My papers were destroyed in a flood and I am helpless with nothing left",
+      "Someone robbed me and took everything, I have no proof of who I am",
+      "Everything I owned was seized and I have lost all my official papers",
+      "My bag was snatched on the train and I lost all my identity proof",
+      "I was robbed and now I have no way to prove my identity to anyone",
+      "A fire destroyed all my belongings and I have no papers of any kind left"
+    ],
+    "employer_blocking": [
+      "My employer refuses to register me and will not give me my UAN",
+      "The contractor already took my e-Shram registration without my consent",
+      "My boss is actively blocking me from getting registered for any scheme",
+      "I cannot register because my employer refuses to cooperate at all",
+      "My contractor registered under his name and I get nothing",
+      "The site owner says he will fire me if I try to register anywhere",
+      "My employer threatened me when I asked about registration"
+    ],
+    "acute_distress": [
+      "I am completely exhausted and have absolutely nothing left to live on",
+      "I do not know what to do, everything has gone terribly wrong",
+      "My work stopped suddenly and I have no money and no food at all",
+      "I am desperate and have nowhere to turn for any help",
+      "I have not eaten in two days and I am stranded with no money",
+      "I cannot go back home and I cannot survive here, I am at my limit",
+      "I am alone in the city with nothing, no food, no shelter, no money"
+    ]
+  }
+}

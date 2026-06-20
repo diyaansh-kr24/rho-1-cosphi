@@ -134,6 +134,9 @@ html, body {
   padding: 10px 14px; font-size: .95rem; font-family: inherit;
 }
 .input-dock textarea:focus { outline: none; border-color: var(--blue); }
+.input-dock textarea:disabled { opacity: .6; cursor: default; }
+#mic-waveform { flex-shrink: 0; border-radius: 4px; }
+#mic-btn.recording { color: #f44336; }
 .send-btn {
   background: var(--blue); border: none; border-radius: 10px;
   width: 44px; height: 44px; color: #fff; font-size: 1.3rem;
@@ -141,6 +144,7 @@ html, body {
   transition: background .2s;
 }
 .send-btn:hover { background: #1a6fa3; }
+.send-btn:disabled { background: var(--surface); cursor: not-allowed; opacity: .7; }
 
 /* ── Chat bubbles ─────────────────────────────────────────────────────────── */
 .bubble {
@@ -171,7 +175,7 @@ html, body {
 .scheme-card:active { transform: scale(.98); }
 .scheme-card.green  { border-left-color: var(--green); }
 .scheme-card.yellow { border-left-color: var(--yellow); }
-.scheme-card.red    { border-left-color: var(--red); pointer-events: none; opacity: .75; }
+.scheme-card.red    { border-left-color: var(--red); opacity: .75; }
 .card-dot  { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
 .card-dot.green  { background: var(--green); }
 .card-dot.yellow { background: var(--yellow); }
@@ -179,6 +183,14 @@ html, body {
 .card-body  { flex: 1; }
 .card-name  { font-weight: 700; margin-bottom: 2px; }
 .card-summary { font-size: .875rem; color: var(--muted); }
+.card-status-label {
+  font-size: .72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; align-self: flex-start; padding: 2px 7px;
+  border-radius: 10px; white-space: nowrap; flex-shrink: 0;
+}
+.card-status-label.green  { background: rgba(46,204,113,.15); color: var(--green); }
+.card-status-label.yellow { background: rgba(243,156, 18,.15); color: var(--yellow); }
+.card-status-label.red    { background: rgba(231, 76, 60,.15); color: var(--red); }
 
 /* ── Detail / split-view screen ──────────────────────────────────────────── */
 #screen-detail {
@@ -244,6 +256,25 @@ html, body {
   cursor: pointer; font-size: .95rem; align-self: flex-start;
 }
 .ack-btn:hover { background: #d68910; }
+
+/* ── Confidence handoff panel ─────────────────────────────────────────────── */
+.refusal-panel.confidence-handoff .verify-question {
+  background: rgba(243,156,18,.1);
+  border-left: 3px solid var(--yellow);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-style: italic;
+  color: var(--text);
+  margin: 0;
+  font-size: .9rem;
+}
+.refusal-panel.confidence-handoff .verify-contact {
+  font-size: .85rem;
+}
+.confirmation-badge {
+  font-size: .72rem; font-weight: 700; color: var(--yellow);
+  margin-top: 5px;
+}
 
 /* ── Provenance footer ────────────────────────────────────────────────────── */
 .provenance-bar {

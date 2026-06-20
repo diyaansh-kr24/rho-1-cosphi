@@ -9,20 +9,25 @@ let _currentAudio = null;            // currently playing HTMLAudioElement
 // ── Public API ─────────────────────────────────────────────────────────────
 
 /**
- * playAudio(text, { auto, forceEmergency })
- *   auto          – true when called from an auto-play trigger (popup/emergency)
- *   forceEmergency – true when called from Emergency flow (overrides global toggle)
+ * stopAudio() — immediately halt any playing audio and discard the queue.
+ * Called on reset session and at the start of every new user message send.
  */
-function playAudio(text, { auto = false, forceEmergency = false } = {}) {
-  const isEmergency = forceEmergency || appState.flow_mode === 'emergency';
-
-  // Precedence check
-  if (!isEmergency) {
-    // Emergency auto-play can never be suppressed — all other cases check toggle
-    if (auto && !appState.voiceoverEnabled) return;
-    if (!auto) return;  // manual clicks handled separately via 🔊 button handler
+function stopAudio() {
+  if (_currentAudio) {
+    _currentAudio.pause();
+    _currentAudio = null;
   }
+  _ttsQueue = Promise.resolve();
+}
 
+/**
+ * playAudio(text, { auto })
+ *   auto – true when called from an auto-play trigger (popup/emergency/voiceover-on)
+ *   Always respects the voiceoverEnabled toggle, including emergency mode.
+ */
+function playAudio(text, { auto = false } = {}) {
+  if (!auto) return;
+  if (!appState.voiceoverEnabled) return;
   _ttsQueue = _ttsQueue.then(() => _doTTS(text));
 }
 
@@ -34,19 +39,42 @@ function playManual(text) {
 }
 
 /**
- * startSTT(onResult) — records audio and sends to /audio/stt proxy
- * onResult(transcribedText: string) called on success
- * onError(err) called on failure
+ * startSTT(onResult, onError, onLevel, onStopRecording)
+ *   onResult(text)       — called after STT API returns
+ *   onError(err)         — called on STT API failure
+ *   onLevel(rms)         — called every 100ms with audio RMS (0–~0.5) for waveform
+ *   onStopRecording()    — called the moment recording stops (before API call)
+ *
+ * Auto-stops on: 5s silence, 15s hard cap, or caller calls .stop() on returned recorder.
  */
-async function startSTT(onResult, onError) {
-  let mediaRecorder, chunks = [];
+async function startSTT(onResult, onError, onLevel, onStopRecording) {
+  let chunks = [], levelInterval = null, hardCapTimeout = null;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const source = audioCtx.createMediaStreamSource(stream);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    source.connect(analyser);
+    const timeDomain = new Uint8Array(analyser.frequencyBinCount);
+
+    const mimeType = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg;codecs=opus', 'audio/mp4']
+      .find(t => MediaRecorder.isTypeSupported(t)) || '';
+    const mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+
     mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
     mediaRecorder.onstop = async () => {
+      clearInterval(levelInterval);
+      clearTimeout(hardCapTimeout);
       stream.getTracks().forEach(t => t.stop());
-      const blob = new Blob(chunks, { type: 'audio/webm' });
+      try { audioCtx.close(); } catch (_) {}
+
+      if (onStopRecording) onStopRecording();
+
+      const actualType = (mediaRecorder.mimeType || 'audio/webm').split(';')[0];
+      const blob = new Blob(chunks, { type: actualType });
       try {
         const text = await _doSTT(blob);
         onResult(text);
@@ -54,10 +82,42 @@ async function startSTT(onResult, onError) {
         if (onError) onError(err);
       }
     };
+
     mediaRecorder.start();
-    // Auto-stop after 8 seconds
-    setTimeout(() => { if (mediaRecorder.state === 'recording') mediaRecorder.stop(); }, 8000);
-    return mediaRecorder;  // caller can call .stop() early
+
+    // Hard cap: 15 seconds
+    hardCapTimeout = setTimeout(() => {
+      if (mediaRecorder.state === 'recording') mediaRecorder.stop();
+    }, 15000);
+
+    // Silence detection + level reporting every 100ms
+    let silenceStart = null;
+    const SILENCE_THRESHOLD = 0.015;
+    const SILENCE_DURATION = 5000;
+
+    levelInterval = setInterval(() => {
+      if (mediaRecorder.state !== 'recording') { clearInterval(levelInterval); return; }
+      analyser.getByteTimeDomainData(timeDomain);
+      let sum = 0;
+      for (let i = 0; i < timeDomain.length; i++) {
+        const v = (timeDomain[i] - 128) / 128;
+        sum += v * v;
+      }
+      const rms = Math.sqrt(sum / timeDomain.length);
+
+      if (onLevel) onLevel(rms);
+
+      if (rms < SILENCE_THRESHOLD) {
+        if (!silenceStart) silenceStart = Date.now();
+        else if (Date.now() - silenceStart >= SILENCE_DURATION) {
+          if (mediaRecorder.state === 'recording') mediaRecorder.stop();
+        }
+      } else {
+        silenceStart = null;
+      }
+    }, 100);
+
+    return mediaRecorder;
   } catch (err) {
     if (onError) onError(err);
     return null;
@@ -71,11 +131,12 @@ async function _doTTS(text) {
   // Stop any currently playing audio
   if (_currentAudio) { _currentAudio.pause(); _currentAudio = null; }
 
-  const lang = appState.language === 'hi' ? 'hi-IN' : 'en-IN';
+  const isHindi = appState.language === 'hi';
+  const lang = isHindi ? 'hi-IN' : 'en-IN';
   const body = JSON.stringify({
     inputs: [text.slice(0, 500)],   // Sarvam limit
     target_language_code: lang,
-    speaker: 'anushka',
+    speaker: isHindi ? 'anushka' : 'arya',
     model: 'bulbul:v2',
   });
 
@@ -103,15 +164,23 @@ async function _doTTS(text) {
 
 async function _doSTT(audioBlob) {
   const lang = appState.language === 'hi' ? 'hi-IN' : 'en-IN';
+  const ext = audioBlob.type.includes('mp4') ? 'mp4'
+    : audioBlob.type.includes('ogg') ? 'ogg'
+    : 'webm';
+  console.log('[STT] sending blob:', audioBlob.type, audioBlob.size, 'bytes, lang:', lang);
   const form = new FormData();
-  form.append('file', audioBlob, 'recording.webm');
+  form.append('file', audioBlob, `recording.${ext}`);
   form.append('language_code', lang);
-  form.append('model', 'saarika:v2');
+  form.append('model', 'saarika:v2.5');
 
   const res = await fetch('/audio/stt', { method: 'POST', body: form });
-  if (!res.ok) throw new Error(`STT ${res.status}`);
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    console.error('[STT] failed', res.status, errBody);
+    throw new Error(`STT ${res.status}: ${errBody}`);
+  }
   const json = await res.json();
-  // Sarvam returns { transcript: "..." }
+  console.log('[STT] response:', json);
   return (json.transcript || '').trim();
 }
 

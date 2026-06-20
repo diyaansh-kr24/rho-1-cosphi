@@ -9,6 +9,8 @@ class ChatRequest(BaseModel):
     conversation_history: list
     corridor_id: str          # bihar_hyd | up_mumbai
     flow_mode: str            # emergency | planning
+    extracted_state: dict = {}
+    language: str = "en"      # en | hi — drives response language
 
 
 # ── Output sub-models ─────────────────────────────────────────────────────────
@@ -42,6 +44,7 @@ class TimelineStep(BaseModel):
 class SchemeCard(BaseModel):
     scheme_id: str
     status: str               # green | yellow | red
+    recommended_first: bool = False  # exactly one card per response; drives frontend elevation
     name: str
     summary: str              # one line
     detail: str
@@ -67,3 +70,5 @@ class ChatResponse(BaseModel):
     map_pins: list[MapPin] = []  # top-level pins for emergency mode
     flow_mode: str            # emergency | planning | out_of_scope
     refusal: Refusal
+    extracted_state: dict = {}
+    confidence_flag: Optional[dict] = None  # set by confidence.py; None = confident verdict

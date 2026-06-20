@@ -34,12 +34,16 @@ app.add_middleware(
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest) -> ChatResponse:
-    return run_pipeline(request)
+    try:
+        return run_pipeline(request)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc))
 
 
 @app.post("/audio/stt")
 async def audio_stt(req: Request):
     """Proxy: browser → /audio/stt → Sarvam STT. Keeps API key off the client."""
+    import logging
     body = await req.body()
     headers = {
         "api-subscription-key": SARVAM_API_KEY,
@@ -47,6 +51,8 @@ async def audio_stt(req: Request):
     }
     async with httpx.AsyncClient(timeout=30) as client:
         resp = await client.post(f"{SARVAM_BASE}/speech-to-text", content=body, headers=headers)
+    if resp.status_code != 200:
+        logging.error("[STT proxy] Sarvam returned %s: %s", resp.status_code, resp.text[:500])
     return Response(content=resp.content, status_code=resp.status_code, media_type=resp.headers.get("content-type"))
 
 

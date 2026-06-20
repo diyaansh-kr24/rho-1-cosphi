@@ -2,7 +2,7 @@
 const i18n = {
   en: {
     // Language screen
-    app_title: 'Migrant Worker Navigator',
+    app_title: 'Saarthi',
 
     // Triage screen
     triage_heading: 'Where are you traveling?',
@@ -25,7 +25,7 @@ const i18n = {
     emer_welcome_hi: 'मैं आपकी मदद के लिए यहाँ हूँ। बताएं क्या हो रहा है, या जल्दी मदद के लिए नीचे बटन दबाएं।',
 
     // Chat screen
-    chat_heading: 'Welfare Navigator',
+    chat_heading: 'Saarthi',
     reset_title: 'Reset session',
     mic_title: 'Speak',
     chat_placeholder: 'Tell me about your situation…',
@@ -35,12 +35,12 @@ const i18n = {
     // Detail screen
     detail_about: 'About this scheme',
     detail_docs: 'Documents you will likely need',
-    detail_steps: 'Steps to apply <span style="font-size:.8rem;color:#9e9e9e">(tap 📍 steps to see on map)</span>',
+    detail_steps: 'Steps to apply',
     detail_offices: 'Office locations',
 
     // Provenance
     prov_verified: '✓ Verified against official sources as of',
-    prov_check: 'Check current rules',
+    prov_check: 'View official site',
     prov_curated: '⚠ Some office locations are illustrative sample data. Verify addresses before visiting.',
 
     // Refusal panels
@@ -55,15 +55,25 @@ const i18n = {
     refusal_c_acked: 'Acknowledged',
 
     // Welcome messages
-    welcome_hyd: 'Namaste! I am your Welfare Navigator. I see that you are currently located in Hyderabad, Telangana and I can help you check your eligibility and apply for government benefits and schemes relevant to you. To get started, tell me a little about your situation. What kind of work or labour do you currently do?',
-    welcome_mum: 'Namaste! I am your Welfare Navigator. I see that you are currently located in Mumbai, Maharashtra and I can help you check your eligibility and apply for government benefits and schemes relevant to you. To get started, tell me a little about your situation. What kind of work or labour do you currently do?',
+    welcome_hyd: 'Namaste! I am Saarthi. I am here to help you find government benefits you may be eligible for in Hyderabad, Telangana. To get started — what do you need help with most right now? For example: food, health cover, accident insurance, pension, or registering as a worker.',
+    welcome_mum: 'Namaste! I am Saarthi. I am here to help you find government benefits you may be eligible for in Mumbai, Maharashtra. To get started — what do you need help with most right now? For example: food, health cover, accident insurance, pension, or registering as a worker.',
+
+    // Card status labels
+    status_green:  'Relevant',
+    status_yellow: 'Action Required',
+    status_red:    'Not Relevant',
 
     // TTS button
     tts_title: 'Read aloud',
+
+    // Emergency pill messages (sent as user message)
+    pill_medical_msg: 'I have a medical emergency and need urgent help. What should I do?',
+    pill_police_msg:  'I need police assistance urgently. What should I do?',
+    pill_shelter_msg: 'I need emergency shelter immediately. What should I do?',
   },
   hi: {
     // Language screen
-    app_title: 'प्रवासी कामगार नेविगेटर',
+    app_title: 'Saarthi',
 
     // Triage screen
     triage_heading: 'आप कहाँ जा रहे हैं?',
@@ -86,7 +96,7 @@ const i18n = {
     emer_welcome_hi: 'मैं आपकी मदद के लिए यहाँ हूँ। बताएं क्या हो रहा है, या जल्दी मदद के लिए नीचे बटन दबाएं।',
 
     // Chat screen
-    chat_heading: 'कल्याण नेविगेटर',
+    chat_heading: 'Saarthi',
     reset_title: 'सत्र रीसेट करें',
     mic_title: 'बोलें',
     chat_placeholder: 'अपनी स्थिति के बारे में बताएं…',
@@ -96,12 +106,12 @@ const i18n = {
     // Detail screen
     detail_about: 'इस योजना के बारे में',
     detail_docs: 'आवश्यक दस्तावेज़',
-    detail_steps: 'आवेदन के चरण <span style="font-size:.8rem;color:#9e9e9e">(📍 चरण पर टैप करें)</span>',
+    detail_steps: 'आवेदन के चरण',
     detail_offices: 'कार्यालय स्थान',
 
     // Provenance
     prov_verified: '✓ सरकारी स्रोतों से सत्यापित, तिथि:',
-    prov_check: 'वर्तमान नियम जाँचें',
+    prov_check: 'आधिकारिक साइट देखें',
     prov_curated: '⚠ कुछ कार्यालय स्थान नमूना डेटा हैं। जाने से पहले पते सत्यापित करें।',
 
     // Refusal panels
@@ -116,11 +126,21 @@ const i18n = {
     refusal_c_acked: 'स्वीकृत',
 
     // Welcome messages
-    welcome_hyd: 'नमस्ते! मैं आपका कल्याण नेविगेटर हूँ। आप अभी हैदराबाद, तेलंगाना में हैं और मैं आपको सरकारी लाभ और योजनाओं के लिए पात्रता जाँचने और आवेदन करने में मदद कर सकता हूँ। शुरू करने के लिए, अपनी स्थिति बताएं। आप किस प्रकार का काम करते हैं?',
-    welcome_mum: 'नमस्ते! मैं आपका कल्याण नेविगेटर हूँ। आप अभी मुंबई, महाराष्ट्र में हैं और मैं आपको सरकारी लाभ और योजनाओं के लिए पात्रता जाँचने और आवेदन करने में मदद कर सकता हूँ। शुरू करने के लिए, अपनी स्थिति बताएं। आप किस प्रकार का काम करते हैं?',
+    welcome_hyd: 'नमस्ते! मैं Saarthi हूँ। मैं हैदराबाद, तेलंगाना में आपके लिए सरकारी योजनाएँ खोजने में मदद करूँगा। शुरू करने के लिए — आपको अभी सबसे ज़्यादा किस चीज़ की ज़रूरत है? जैसे: खाना, स्वास्थ्य सुविधा, दुर्घटना बीमा, पेंशन, या मज़दूर पंजीकरण।',
+    welcome_mum: 'नमस्ते! मैं Saarthi हूँ। मैं मुंबई, महाराष्ट्र में आपके लिए सरकारी योजनाएँ खोजने में मदद करूँगा। शुरू करने के लिए — आपको अभी सबसे ज़्यादा किस चीज़ की ज़रूरत है? जैसे: खाना, स्वास्थ्य सुविधा, दुर्घटना बीमा, पेंशन, या मज़दूर पंजीकरण।',
+
+    // Card status labels
+    status_green:  'प्रासंगिक',
+    status_yellow: 'कार्रवाई आवश्यक',
+    status_red:    'अप्रासंगिक',
 
     // TTS button
     tts_title: 'ज़ोर से पढ़ें',
+
+    // Emergency pill messages (sent as user message)
+    pill_medical_msg: 'मुझे चिकित्सा आपातकाल है, मुझे तुरंत मदद चाहिए। मुझे क्या करना चाहिए?',
+    pill_police_msg:  'मुझे तुरंत पुलिस की मदद चाहिए। मुझे क्या करना चाहिए?',
+    pill_shelter_msg: 'मुझे तुरंत आश्रय चाहिए। मुझे क्या करना चाहिए?',
   },
 };
 
@@ -159,11 +179,13 @@ const appState = {
   corridor_id: 'bihar_hyd',
   flow_mode: 'planning',
   screen: 'language',
-  voiceoverEnabled: true,
+  voiceoverEnabled: false,
   awaitingAck: false,
   conversation_history: [],
+  extracted_state: {},
   currentCards: [],       // last set of scheme cards
   currentPins: [],        // all map pins for current response
+  activeSchemeId: null,   // scheme_id of the detail card currently open
 };
 
 // ── Screen routing ─────────────────────────────────────────────────────────
@@ -194,13 +216,16 @@ document.getElementById('corridor-select').addEventListener('change', e => {
 
 document.getElementById('btn-emergency').addEventListener('click', () => {
   appState.flow_mode = 'emergency';
+  appState.voiceoverEnabled = true;
   appState.conversation_history = [];
+  appState.extracted_state = {};
   appState.currentCards = [];
   appState.currentPins = [];
   appState.awaitingAck = false;
   document.getElementById('chat-history').innerHTML = '';
   setDockEnabled(true);
   setEmergencyMode(true);
+  _updateVoiceoverIcon();
   showScreen('chat');
 
   // Emergency welcome message
@@ -213,19 +238,21 @@ document.getElementById('btn-emergency').addEventListener('click', () => {
   // Render inline quick-action pills in the chat history
   appendEmergencyPills();
 
-  // Auto-play welcome — emergency override ensures it always plays
-  playAudio(welcomeDisplay, { auto: true, forceEmergency: true });
+  playAudio(welcomeDisplay, { auto: true });
 });
 
 document.getElementById('btn-planning').addEventListener('click', () => {
   appState.flow_mode = 'planning';
+  appState.voiceoverEnabled = false;
   appState.conversation_history = [];
+  appState.extracted_state = {};
   appState.currentCards = [];
   appState.currentPins = [];
   appState.awaitingAck = false;
   document.getElementById('chat-history').innerHTML = '';
   setDockEnabled(true);
   setEmergencyMode(false);
+  _updateVoiceoverIcon();
   showScreen('chat');
 
   // Welcome message: always store the English version in conversation_history
@@ -259,10 +286,63 @@ document.getElementById('btn-planning').addEventListener('click', () => {
 });
 
 // ── Voiceover toggle ───────────────────────────────────────────────────────
+function _updateVoiceoverIcon() {
+  const isEmergency = appState.flow_mode === 'emergency';
+  document.getElementById('btn-voiceover').textContent = appState.voiceoverEnabled
+    ? (isEmergency ? '📢' : '🔊')
+    : (isEmergency ? '🔕' : '🔇');
+}
+
 document.getElementById('btn-voiceover').addEventListener('click', () => {
   appState.voiceoverEnabled = !appState.voiceoverEnabled;
-  document.getElementById('btn-voiceover').textContent = appState.voiceoverEnabled ? '🔊' : '🔇';
+  if (!appState.voiceoverEnabled) stopAudio();
+  _updateVoiceoverIcon();
 });
+
+// ── Waveform canvas helpers ────────────────────────────────────────────────
+let _waveformRaf = null;
+let _waveformLevel = 0;
+
+function _startWaveform() {
+  const canvas = document.getElementById('mic-waveform');
+  if (!canvas) return;
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const BARS = 9, BAR_W = 3, GAP = 2;
+  const totalW = BARS * (BAR_W + GAP) - GAP;
+  const startX = Math.round((W - totalW) / 2);
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < BARS; i++) {
+      const dist = Math.abs(i - 4) / 4;
+      const envelope = 1 - dist * 0.35;
+      const noise = _waveformLevel > 0.005 ? (Math.random() - 0.5) * _waveformLevel * H * 0.6 : 0;
+      const h = Math.max(2, _waveformLevel * H * 2.8 * envelope + noise);
+      const x = startX + i * (BAR_W + GAP);
+      ctx.fillStyle = '#2196f3';
+      ctx.fillRect(x, Math.round((H - h) / 2), BAR_W, Math.round(h));
+    }
+    _waveformRaf = requestAnimationFrame(frame);
+  }
+  frame();
+}
+
+function _stopWaveform() {
+  if (_waveformRaf) { cancelAnimationFrame(_waveformRaf); _waveformRaf = null; }
+  _waveformLevel = 0;
+  const canvas = document.getElementById('mic-waveform');
+  if (canvas) canvas.style.display = 'none';
+}
+
+function _typewriterFill(input, text, onDone) {
+  input.value = '';
+  let i = 0;
+  (function step() {
+    if (i <= text.length) { input.value = text.slice(0, i++); setTimeout(step, 18); }
+    else if (onDone) onDone();
+  })();
+}
 
 // ── Mic button (STT) ───────────────────────────────────────────────────────
 let _recorder = null;
@@ -270,34 +350,49 @@ document.getElementById('mic-btn').addEventListener('click', async () => {
   const micBtn = document.getElementById('mic-btn');
   if (_recorder && _recorder.state === 'recording') {
     _recorder.stop();
-    micBtn.textContent = '🎤';
     return;
   }
+  stopAudio();  // cut any playing TTS before mic opens
+  micBtn.classList.add('recording');
   micBtn.textContent = '⏹';
+  const inp = document.getElementById('chat-input');
+  const prevValue = inp.value;
+  const prevPlaceholder = inp.placeholder;
+  inp.value = '';
+  inp.placeholder = '● Listening…';
+  inp.disabled = true;
+  _startWaveform();
+
   _recorder = await startSTT(
     text => {
+      // Transcription arrived
+      inp.disabled = false;
+      inp.placeholder = prevPlaceholder;
+      micBtn.classList.remove('recording');
       micBtn.textContent = '🎤';
       if (text) {
-        document.getElementById('chat-input').value = text;
-        sendMessage();
+        _typewriterFill(inp, text, () => sendMessage());
+      } else {
+        inp.value = prevValue;
       }
     },
     err => {
+      inp.disabled = false;
+      inp.placeholder = prevPlaceholder;
+      inp.value = prevValue;
+      micBtn.classList.remove('recording');
       micBtn.textContent = '🎤';
       console.warn('STT error:', err);
+    },
+    rms => { _waveformLevel = rms; },
+    () => {
+      // Recording stopped, API call now in progress
+      _stopWaveform();
+      micBtn.classList.remove('recording');
+      micBtn.textContent = '🎤';
+      inp.placeholder = 'Processing…';
     }
   );
-});
-
-// ── Reset session ──────────────────────────────────────────────────────────
-document.getElementById('btn-reset').addEventListener('click', () => {
-  appState.conversation_history = [];
-  appState.currentCards = [];
-  appState.currentPins = [];
-  appState.awaitingAck = false;
-  setEmergencyMode(false);
-  clearChat();
-  showScreen('language');
 });
 
 // ── Chat screen — input dock ───────────────────────────────────────────────
@@ -305,14 +400,42 @@ const chatInput = document.getElementById('chat-input');
 const sendBtn   = document.getElementById('send-btn');
 const inputDock = document.getElementById('input-dock');
 
+// Guard against concurrent sends — true while a /chat request is in flight
+let _sending = false;
+
+function _setSending(on) {
+  _sending = on;
+  // Re-enable send only when not sending AND not waiting for a HITL ack
+  sendBtn.disabled    = on || appState.awaitingAck;
+  sendBtn.textContent = on ? '■' : '➤';
+}
+
+// ── Reset session ──────────────────────────────────────────────────────────
+document.getElementById('btn-reset').addEventListener('click', () => {
+  try { stopAudio(); } catch (_) {}
+  _sending = false;
+  appState.conversation_history = [];
+  appState.extracted_state = {};
+  appState.currentCards = [];
+  appState.currentPins = [];
+  appState.awaitingAck = false;
+  appState.voiceoverEnabled = false;
+  sendBtn.disabled    = false;
+  sendBtn.textContent = '➤';
+  setEmergencyMode(false);
+  _updateVoiceoverIcon();
+  clearChat();
+  showScreen('language');
+});
+
 chatInput.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
-    if (!appState.awaitingAck) sendMessage();
+    if (!_sending && !appState.awaitingAck) sendMessage();
   }
 });
 sendBtn.addEventListener('click', () => {
-  if (!appState.awaitingAck) sendMessage();
+  if (!_sending && !appState.awaitingAck) sendMessage();
 });
 
 function clearChat() {
@@ -324,31 +447,47 @@ function clearChat() {
 function setDockEnabled(enabled) {
   inputDock.classList.toggle('disabled', !enabled);
   chatInput.disabled = !enabled;
-  sendBtn.disabled   = !enabled;
+  sendBtn.disabled = !enabled || _sending;
 }
 
 async function sendMessage() {
+  if (_sending || appState.awaitingAck) return;
   const text = chatInput.value.trim();
   if (!text) return;
+
+  stopAudio();
   chatInput.value = '';
+  _setSending(true);
 
   appendBubble(text, 'user');
   appState.conversation_history.push({ role: 'user', content: text });
 
+  // If the user is on a detail card, tell the backend which scheme they're looking at
+  const messageForApi = appState.activeSchemeId
+    ? `[viewing scheme: ${appState.activeSchemeId}] ${text}`
+    : text;
+
   const loading = appendSpinner();
   try {
     const resp = await postChat({
-      message: text,
+      message: messageForApi,
       conversation_history: appState.conversation_history.slice(-10),
       corridor_id: appState.corridor_id,
       flow_mode: appState.flow_mode,
+      extracted_state: appState.extracted_state,
+      language: appState.language,
     });
     loading.remove();
+    if (resp.refusal && resp.refusal.type === 'A') {
+      await new Promise(r => setTimeout(r, 1000 + Math.random() * 500));
+    }
     handleChatResponse(resp);
   } catch (err) {
     loading.remove();
     appendBubble(t('chat_error'), 'agent');
     console.error(err);
+  } finally {
+    _setSending(false);
   }
 }
 
@@ -391,9 +530,9 @@ function appendEmergencyPills() {
   container.className = 'emer-pills-inline';
 
   const pillData = [
-    { type: 'medical', msg: 'I have a medical emergency and need urgent help. What should I do?', labelKey: 'pill_medical', cls: 'medical' },
-    { type: 'police',  msg: 'I need police assistance urgently. What should I do?',             labelKey: 'pill_police',  cls: 'police'  },
-    { type: 'shelter', msg: 'I need emergency shelter immediately. What should I do?',          labelKey: 'pill_shelter', cls: 'shelter' },
+    { type: 'medical', msgKey: 'pill_medical_msg', labelKey: 'pill_medical', cls: 'medical' },
+    { type: 'police',  msgKey: 'pill_police_msg',  labelKey: 'pill_police',  cls: 'police'  },
+    { type: 'shelter', msgKey: 'pill_shelter_msg', labelKey: 'pill_shelter', cls: 'shelter' },
   ];
 
   pillData.forEach(pd => {
@@ -402,7 +541,7 @@ function appendEmergencyPills() {
     btn.textContent = t(pd.labelKey);
     btn.addEventListener('click', () => {
       _emerPillType = pd.type;
-      document.getElementById('chat-input').value = pd.msg;
+      document.getElementById('chat-input').value = t(pd.msgKey);
       sendMessage();
     });
     container.appendChild(btn);
@@ -431,6 +570,9 @@ function appendInlineMap(pins) {
 // ── Chat response renderer ─────────────────────────────────────────────────
 function handleChatResponse(resp) {
   appState.conversation_history.push({ role: 'assistant', content: resp.response });
+  if (resp.extracted_state && Object.keys(resp.extracted_state).length > 0) {
+    appState.extracted_state = resp.extracted_state;
+  }
 
   // Refusal / HITL panels
   if (resp.refusal && resp.refusal.type) {
@@ -447,18 +589,14 @@ function handleChatResponse(resp) {
 
   // ── Emergency-specific: inline map + auto-play with safety override ──
   if (appState.flow_mode === 'emergency') {
-    // Filter pins by pill type if a pill was tapped
-    let pins = resp.map_pins || [];
-    if (_emerPillType && pins.length) {
-      pins = pins.filter(p => p.emergency_category === _emerPillType);
-    }
+    // Backend filters pins by crisis_type — only non-empty when crisis is identified
+    const pins = resp.map_pins || [];
     _emerPillType = null;
 
-    // Render inline map in chat feed
+    // Render inline map in chat feed (no-ops if pins is empty)
     appendInlineMap(pins);
 
-    // Emergency auto-play — safety override, always plays
-    playAudio(resp.response, { auto: true, forceEmergency: true });
+    playAudio(resp.response, { auto: true });
     return;
   }
 
@@ -467,19 +605,36 @@ function handleChatResponse(resp) {
 
   // Traffic-light cards
   if (resp.cards && resp.cards.length > 0) {
-    appState.currentCards = resp.cards;
-    appState.currentPins = resp.cards.flatMap(c => c.map_pins || []);
-    appendCards(resp.cards);
-    // Provenance footer only when cards are present (end of intake)
+    // Fallback portal map — covers all five schemes regardless of which chunks were retrieved
+    const SCHEME_PORTALS = {
+      eshram:  'https://eshram.gov.in',
+      onorc:   'https://nfsa.gov.in',
+      pmsby:   'https://jansuraksha.gov.in',
+      pmjay:   'https://pmjay.gov.in',
+      pm_sym:  'https://maandhan.in',
+      bocw:    'https://tbocwwb.telangana.gov.in',
+    };
+    const portalMap = { ...SCHEME_PORTALS };
+    (resp.sources || []).forEach(s => { if (s.official_portal) portalMap[s.scheme_id] = s.official_portal; });
+    const enrichedCards = resp.cards.map(c => ({ ...c, official_portal: portalMap[c.scheme_id] || null }));
+    appState.currentCards = enrichedCards;
+    appState.currentPins = enrichedCards.flatMap(c => c.map_pins || []);
+    // Pass confidence scheme_id so the affected card gets a confirmation badge
+    const confSchemeId = resp.confidence_flag ? resp.confidence_flag.scheme_id : null;
+    appendCards(enrichedCards, confSchemeId);
+    // Provenance footer — date only, links moved to detail view
     if (resp.provenance) {
-      appendProvenance(resp.provenance, resp.sources || []);
+      appendProvenance(resp.provenance);
     }
   }
 
-  if (resp.verification_required) {
+  // Confidence handoff — non-blocking, conversation continues
+  if (resp.confidence_flag) {
+    renderConfidencePanel(resp.confidence_flag);
+  } else if (resp.verification_required) {
+    // Genuine HITL (severe emergency, extreme policy ambiguity) — hard lock
     appState.awaitingAck = true;
     setDockEnabled(false);
-    // Render amber HITL panel if backend flagged it outside of a refusal.type:'C' response
     renderRefusalPanel(
       { type: 'C', reason: (resp.refusal && resp.refusal.reason) || 'This situation needs human verification. Please contact a Common Service Centre (CSC) or call helpline 14434.' },
       resp.sources || []
@@ -520,16 +675,11 @@ function appendSpinner() {
 }
 
 // ── Provenance footer ──────────────────────────────────────────────────────
-function appendProvenance(prov, sources) {
+function appendProvenance(prov) {
   const history = document.getElementById('chat-history');
   const bar = document.createElement('div');
   bar.className = 'provenance-bar';
   let html = `<span>${escHtml(t('prov_verified'))} ${escHtml(prov.oldest_verified_date)}</span>`;
-  if (sources.length) {
-    html += '<span>' + sources.map(s =>
-      `<a href="${escHtml(s.official_portal)}" target="_blank" rel="noopener">${escHtml(t('prov_check'))} (${escHtml(s.scheme_id)}) →</a>`
-    ).join(' ') + '</span>';
-  }
   if (prov.contains_curated_sample) {
     html += `<span class="curated-warning">${escHtml(t('prov_curated'))}</span>`;
   }
@@ -538,11 +688,15 @@ function appendProvenance(prov, sources) {
 }
 
 // ── Traffic-light cards ────────────────────────────────────────────────────
-function appendCards(cards) {
+function appendCards(cards, confidenceSchemeId = null) {
+  const ORDER = { green: 0, yellow: 1, red: 2 };
+  const sorted = [...cards].sort((a, b) => (ORDER[a.status] ?? 3) - (ORDER[b.status] ?? 3));
+
   const history = document.getElementById('chat-history');
   const container = document.createElement('div');
   container.className = 'cards-container';
-  cards.forEach(card => {
+  sorted.forEach(card => {
+    const statusLabel = t(`status_${card.status}`);
     const el = document.createElement('div');
     el.className = `scheme-card ${card.status}`;
     el.innerHTML = `
@@ -550,11 +704,13 @@ function appendCards(cards) {
       <div class="card-body">
         <div class="card-name">${escHtml(card.name)}</div>
         <div class="card-summary">${escHtml(card.summary)}</div>
+        ${confidenceSchemeId && card.scheme_id === confidenceSchemeId
+          ? '<div class="confirmation-badge">⚠ Needs confirmation</div>'
+          : ''}
       </div>
+      <div class="card-status-label ${card.status}">${escHtml(statusLabel)}</div>
     `;
-    if (card.status !== 'red') {
-      el.addEventListener('click', () => openDetail(card));
-    }
+    el.addEventListener('click', () => openDetail(card));
     container.appendChild(el);
   });
   history.appendChild(container);
@@ -563,6 +719,7 @@ function appendCards(cards) {
 
 // ── Detail split-view ──────────────────────────────────────────────────────
 function openDetail(card) {
+  appState.activeSchemeId = card.scheme_id || null;
   document.getElementById('detail-scheme-name').textContent = card.name;
   document.getElementById('detail-status-dot').className = `card-dot ${card.status}`;
 
@@ -578,7 +735,7 @@ function openDetail(card) {
     li.className = 'timeline-item' + (step.has_location ? ' has-location' : '');
     li.innerHTML = `
       <div class="step-num">${i + 1}</div>
-      <div class="step-text">${escHtml(step.step)}${step.has_location ? '<span class="step-pin-icon">📍</span>' : ''}</div>
+      <div class="step-text">${escHtml(step.step)}</div>
     `;
     if (step.has_location && step.pin_ids.length) {
       li.addEventListener('click', () => updatePins(step.pin_ids));
@@ -593,12 +750,40 @@ function openDetail(card) {
     renderPins(allCardPins, 'map-container');
   }, 100);
 
+  // Portal link — "Check current rules" for this scheme
+  const provEl = document.getElementById('detail-provenance');
+  if (provEl) {
+    if (card.official_portal) {
+      provEl.innerHTML = `<a href="${escHtml(card.official_portal)}" target="_blank" rel="noopener">${escHtml(t('prov_check'))} →</a>`;
+      provEl.style.display = '';
+    } else {
+      provEl.style.display = 'none';
+    }
+  }
+
   showScreen('detail');
 }
 
 document.getElementById('btn-back-detail').addEventListener('click', () => {
+  appState.activeSchemeId = null;
   showScreen('chat');
 });
+
+// ── Confidence handoff panel (non-blocking) ────────────────────────────────
+function renderConfidencePanel(flag) {
+  const history = document.getElementById('chat-history');
+  const panel = document.createElement('div');
+  panel.className = 'refusal-panel type-c confidence-handoff';
+  panel.innerHTML = `
+    <h4>⚠ One thing to confirm first</h4>
+    <p>Before we can be certain: <strong>${escHtml(flag.unresolved_fact)}</strong>.</p>
+    <blockquote class="verify-question">"${escHtml(flag.verify_question)}"</blockquote>
+    <p class="verify-contact">Ask at: <strong>${escHtml(flag.contact)}</strong></p>
+  `;
+  history.appendChild(panel);
+  history.scrollTop = history.scrollHeight;
+  playAudio(flag.unresolved_fact + '. ' + flag.verify_question, { auto: true });
+}
 
 // ── Refusal / HITL panel ───────────────────────────────────────────────────
 function renderRefusalPanel(refusal, sources) {

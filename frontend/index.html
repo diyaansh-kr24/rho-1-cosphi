@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Migrant Worker Navigator</title>
+  <title>Saarthi</title>
   <link rel="stylesheet" href="/css/styles.css" />
   <!-- Leaflet (Step 10 — loads but map.js handles absence gracefully) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -14,7 +14,7 @@
 
   <!-- ── Screen 1: Language ───────────────────────────────────────────── -->
   <section id="screen-language" class="screen active">
-    <h1 data-i18n="app_title">Migrant Worker Navigator</h1>
+    <h1 data-i18n="app_title">Saarthi</h1>
     <p>Choose your language / अपनी भाषा चुनें</p>
     <button id="btn-english" class="lang-btn english">English</button>
     <button id="btn-hindi"   class="lang-btn hindi">हिन्दी</button>
@@ -63,8 +63,8 @@
   <!-- ── Screen 4: Planning / Chat ────────────────────────────────────── -->
   <section id="screen-chat" class="screen">
     <div class="chat-header">
-      <h3 data-i18n="chat_heading">Welfare Navigator</h3>
-      <button id="btn-voiceover" class="icon-btn" title="Toggle voiceover">🔊</button>
+      <h3 data-i18n="chat_heading">Saarthi</h3>
+      <button id="btn-voiceover" class="icon-btn" title="Toggle voiceover">🔇</button>
       <button id="btn-reset" class="icon-btn" data-i18n-title="reset_title" title="Reset session">↺</button>
     </div>
 
@@ -72,6 +72,7 @@
 
     <div id="input-dock" class="input-dock">
       <button id="mic-btn" class="icon-btn" data-i18n-title="mic_title" title="Speak">🎤</button>
+      <canvas id="mic-waveform" width="52" height="28" style="display:none"></canvas>
       <textarea
         id="chat-input"
         data-i18n-placeholder="chat_placeholder"
@@ -110,6 +111,7 @@
         <h4 data-i18n="detail_offices">Office locations</h4>
         <div id="map-container"></div>
       </div>
+      <div id="detail-provenance" class="provenance-bar" style="display:none"></div>
     </div>
   </section>
 
