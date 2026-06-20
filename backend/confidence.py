@@ -84,10 +84,15 @@ _SCHEME_HANDOFFS: dict[str, dict] = {
 
 
 def _detect_scheme(message: str, context: str) -> str:
-    """Identify the most relevant scheme from the message + retrieved context."""
-    combined = message + " " + context
+    """Identify the most relevant scheme — message takes priority over context.
+    Context alone almost always contains e-Shram (hub scheme), so checking combined
+    text first caused e-Shram to win even when the user mentioned ration card."""
     for scheme_id, pattern in _SCHEME_KEYWORDS.items():
-        if pattern.search(combined):
+        if pattern.search(message):
+            return scheme_id
+    # Fall back to context only when the message has no scheme signal
+    for scheme_id, pattern in _SCHEME_KEYWORDS.items():
+        if pattern.search(context):
             return scheme_id
     return "generic"
 

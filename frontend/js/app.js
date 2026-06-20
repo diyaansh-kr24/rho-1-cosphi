@@ -577,10 +577,6 @@ function handleChatResponse(resp) {
   // Refusal / HITL panels
   if (resp.refusal && resp.refusal.type) {
     renderRefusalPanel(resp.refusal, resp.sources || []);
-    if (resp.refusal.type === 'C') {
-      appState.awaitingAck = true;
-      setDockEnabled(false);
-    }
     return;
   }
 
@@ -632,9 +628,6 @@ function handleChatResponse(resp) {
   if (resp.confidence_flag) {
     renderConfidencePanel(resp.confidence_flag);
   } else if (resp.verification_required) {
-    // Genuine HITL (severe emergency, extreme policy ambiguity) — hard lock
-    appState.awaitingAck = true;
-    setDockEnabled(false);
     renderRefusalPanel(
       { type: 'C', reason: (resp.refusal && resp.refusal.reason) || 'This situation needs human verification. Please contact a Common Service Centre (CSC) or call helpline 14434.' },
       resp.sources || []
@@ -811,7 +804,6 @@ function renderRefusalPanel(refusal, sources) {
     body = refusal.reason;
     extra = `
       <p>${escHtml(t('refusal_c_helpline'))} <strong>14434</strong> | ${escHtml(t('refusal_c_emergency'))} <strong>112</strong></p>
-      <button class="ack-btn" id="ack-btn">${escHtml(t('refusal_c_ack'))}</button>
     `;
   }
 
@@ -820,16 +812,7 @@ function renderRefusalPanel(refusal, sources) {
   history.scrollTop = history.scrollHeight;
 
   if (refusal.type === 'C') {
-    const ackBtn = document.getElementById('ack-btn');
-    if (ackBtn) {
-      ackBtn.addEventListener('click', () => {
-        appState.awaitingAck = false;
-        setDockEnabled(true);
-        ackBtn.disabled = true;
-        ackBtn.textContent = t('refusal_c_acked');
-      });
-      playAudio(body, { auto: true });  // Type-C popup auto-play
-    }
+    playAudio(body, { auto: true });
   }
 }
 

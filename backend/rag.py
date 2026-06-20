@@ -211,7 +211,7 @@ def _synthesize(
     elif in_intake:
         max_tokens = 500
     else:
-        max_tokens = 1024
+        max_tokens = 1536
 
     return call_llm(
         augmented_msg,
@@ -291,13 +291,18 @@ def _assemble(
     prov_data = compute_provenance(metas)
 
     # Guardrail finalization — Python decides, not LLM
-    # Re-classify with LLM proposal; embedding check is cheap (matrix already cached).
     llm_refusal_type = llm_output.get("refusal", {}).get("type")
     final_refusal = classify(
         request.message, embed_model,
         llm_proposed_type=llm_refusal_type,
         flow_mode=request.flow_mode,
     )
+
+    # If confidence handoff already handles the uncertainty, suppress Type C —
+    # document hedges ("I don't think I have Aadhaar") match distress exemplars
+    # but are handled more precisely by assess_confidence.
+    if confidence is not None and final_refusal["type"] == "C":
+        final_refusal = {"type": None, "reason": ""}
 
     # verification_required: Python confirms LLM proposal, guardrail C, or confidence flag
     verification_required = (
