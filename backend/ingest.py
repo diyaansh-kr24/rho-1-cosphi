@@ -65,7 +65,7 @@ def collect_docs() -> list[dict]:
     for f in (DATA_DIR / "raw" / "up_mumbai").glob("*.md"):
         meta, body = parse_frontmatter(f.read_text(encoding="utf-8"))
         docs.append({"meta": meta, "body": body, "file": f.name})
-    # Routed-out docs (bocw etc.) — included so retrieval can surface the honest decline
+    # Routed-out docs (bocw etc.) included so retrieval can surface the honest decline
     for f in (DATA_DIR / "routed_out").glob("*.md"):
         meta, body = parse_frontmatter(f.read_text(encoding="utf-8"))
         docs.append({"meta": meta, "body": body, "file": f.name})

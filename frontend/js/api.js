@@ -1,4 +1,4 @@
-// Relative URL — same-origin, no CORS preflight
+// Relative URL, same-origin, no CORS preflight required
 async function postChat(payload) {
   const res = await fetch('/chat', {
     method: 'POST',

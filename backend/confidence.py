@@ -1,4 +1,5 @@
 """
+
 Deterministic confidence assessor — zero LLM calls.
 Fires when an eligibility verdict would be unreliable due to hedged facts.
 Returns None when confident; returns a structured flag when low-confidence.
@@ -10,7 +11,7 @@ so it is NOT checked as a standalone condition here.
 from __future__ import annotations
 import re
 
-# ── Condition 1: Uncertainty phrase co-occurring with an eligibility keyword ───
+# Condition 1: uncertainty phrase co-occurring with an eligibility keyword
 _UNCERTAINTY_PHRASES = re.compile(
     r"\b(i think|i'?m not sure|i don'?t know|not sure|maybe|i don'?t remember|"
     r"i forget|might have|possibly)\b",
@@ -24,7 +25,7 @@ _ELIGIBILITY_KEYWORDS = re.compile(
     re.IGNORECASE,
 )
 
-# ── Condition 2: Status-change signals ────────────────────────────────────────
+# Condition 2: status-change signals
 _STATUS_CHANGE = re.compile(
     r"\b(used to|i had|it expired|expired|i stopped|stopped contributing|"
     r"changed my (?:number|phone|mobile)|closed (?:my )?account|"
@@ -32,24 +33,32 @@ _STATUS_CHANGE = re.compile(
     re.IGNORECASE,
 )
 
-# ── Condition 3: Proxy-document signals ───────────────────────────────────────
+# Condition 3: proxy-document signals
 _PROXY_DOC = re.compile(
     r"\b(in (?:my )?(?:wife|husband|father|mother|son|daughter|family member)'?s name|"
     r"not in my name|someone else'?s (?:card|name))\b",
     re.IGNORECASE,
 )
 
-# ── Scheme detection keywords ─────────────────────────────────────────────────
+# "aadhaar" is listed before "eshram" so message-level keyword matching takes priority.
+# Eshram appears in almost every context chunk as the hub scheme, so context fallback
+# would otherwise always return eshram even when the user mentioned ration card.
 _SCHEME_KEYWORDS: dict[str, re.Pattern] = {
-    "eshram": re.compile(r"\b(e-?shram|uan|unorganis(?:ed|ed) worker)\b", re.IGNORECASE),
-    "pmsby":  re.compile(r"\b(pmsby|accident (?:cover|insurance)|suraksha bima)\b", re.IGNORECASE),
-    "pmjay":  re.compile(r"\b(pm-?jay|ayushman|hospitali[sz]ation|cashless)\b", re.IGNORECASE),
-    "pm_sym": re.compile(r"\b(pm-?sym|shram yogi|maandhan|pension)\b", re.IGNORECASE),
-    "onorc":  re.compile(r"\b(onorc|ration card|ration|fair price shop|pds)\b", re.IGNORECASE),
+    "aadhaar": re.compile(r"\b(aadhaar|aadhar|uid|uidai)\b", re.IGNORECASE),
+    "eshram":  re.compile(r"\b(e-?shram|uan|unorganis(?:ed|ed) worker)\b", re.IGNORECASE),
+    "pmsby":   re.compile(r"\b(pmsby|accident (?:cover|insurance)|suraksha bima)\b", re.IGNORECASE),
+    "pmjay":   re.compile(r"\b(pm-?jay|ayushman|hospitali[sz]ation|cashless)\b", re.IGNORECASE),
+    "pm_sym":  re.compile(r"\b(pm-?sym|shram yogi|maandhan|pension)\b", re.IGNORECASE),
+    "onorc":   re.compile(r"\b(onorc|ration card|ration|fair price shop|pds)\b", re.IGNORECASE),
 }
 
-# ── Canned handoff entries — deterministic, never LLM-generated ───────────────
+# Deterministic handoff copy for each scheme, never LLM-generated
 _SCHEME_HANDOFFS: dict[str, dict] = {
+    "aadhaar": {
+        "unresolved_fact": "whether you have a valid Aadhaar card",
+        "verify_question": "Do I have an active Aadhaar? If not, where is the nearest enrolment centre?",
+        "contact": "nearest Aadhaar enrolment centre or UIDAI helpline 1947",
+    },
     "eshram": {
         "unresolved_fact": "whether your e-Shram registration is still active",
         "verify_question": "Is my e-Shram UAN still active, and what is my UAN number?",

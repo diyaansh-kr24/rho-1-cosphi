@@ -36,7 +36,7 @@ from backend.schemas import (
     TimelineStep,
 )
 
-# Module-level singletons — loaded once at import
+# Module-level singletons, loaded once at import
 _embed_model: SentenceTransformer | None = None
 _chroma_client: chromadb.PersistentClient | None = None
 _collection = None
@@ -64,10 +64,8 @@ def _get_resources():
     return _embed_model, _collection, _offices
 
 
-# ── Noise gate ────────────────────────────────────────────────────────────────
-# Python only catches structural emptiness (≤2 chars, pure non-alphanumeric).
-# Contextual filler ("uh", "acha", "haan", etc.) is handled by the system prompt
-# since the LLM understands language and can catch Hindi/regional fillers too.
+# Structural noise only (<=2 chars, pure non-alphanumeric).
+# Contextual filler ("uh", "acha", etc.) is deferred to the system prompt.
 _SLOT_QUESTIONS = [
     ("current_need", "What do you need help with most — food, health cover, accident insurance, pension, or worker registration?"),
     ("origin_state", "Which state did you migrate from?"),
@@ -125,10 +123,10 @@ def _noise_response(state: dict) -> ChatResponse:
     )
 
 
-# ── Step 1: Route ─────────────────────────────────────────────────────────────
+# Step 1: Route
 
 def _route(request: ChatRequest, embed_model) -> dict:
-    """Deterministic routing — returns guardrail decision before any LLM call."""
+    """Deterministic routing; returns guardrail decision before any LLM call."""
     refusal = classify(request.message, embed_model, flow_mode=request.flow_mode)
     return {
         "flow_mode": request.flow_mode,
@@ -139,13 +137,13 @@ def _route(request: ChatRequest, embed_model) -> dict:
     }
 
 
-# ── Step 2: Retrieve ──────────────────────────────────────────────────────────
+# Step 2: Retrieve
 
 def _retrieve(request: ChatRequest, embed_model, collection) -> tuple[list[str], list[dict]]:
     """Embed query and fetch corridor-filtered chunks from ChromaDB."""
     allowed = CORRIDOR_FILTER.get(request.corridor_id, ["all"])
     q_vec = embed_model.encode(request.message, normalize_embeddings=True).tolist()
-    # Dynamic n_results: emergency=2 (calm response only), planning=3 (fits Groq free-tier budget)
+    # emergency=2 (response only); planning=3 stays within Groq free-tier token budget
     n_results = 2 if request.flow_mode == "emergency" else 3
     results = collection.query(
         query_embeddings=[q_vec],
@@ -155,6 +153,23 @@ def _retrieve(request: ChatRequest, embed_model, collection) -> tuple[list[str],
     )
     docs = results["documents"][0]
     metas = results["metadatas"][0]
+
+    # BOCW rarely wins the similarity race; force-inject so it is always present for bihar_hyd
+    if request.flow_mode != "emergency" and request.corridor_id == "bihar_hyd":
+        if not any(m.get("scheme_id") == "bocw" for m in metas):
+            try:
+                bocw_r = collection.query(
+                    query_embeddings=[q_vec],
+                    n_results=1,
+                    where={"scheme_id": {"$eq": "bocw"}},
+                    include=["documents", "metadatas"],
+                )
+                if bocw_r["documents"][0]:
+                    docs = docs + bocw_r["documents"][0]
+                    metas = metas + bocw_r["metadatas"][0]
+            except Exception:
+                pass
+
     return docs, metas
 
 
@@ -164,7 +179,7 @@ _CORRIDOR_DESTINATION = {
 }
 
 
-# ── Step 3: Synthesize ────────────────────────────────────────────────────────
+# Step 3: Synthesize
 
 def _build_context(docs: list[str], metas: list[dict]) -> str:
     """Build the retrieved-context string shared by _synthesize and assess_confidence."""
@@ -186,8 +201,7 @@ def _synthesize(
     lang_hint = " [response_language: hi — ALL prose fields (response, summary, detail, document_checklist, timeline steps) MUST be in Hindi/Devanagari ONLY. Zero English words except scheme abbreviations (e-Shram, PMJAY, ONORC, PMSBY, PM-SYM, BOCW). cards[].name MUST always be the official English scheme name. extracted_state values may be Hindi or English — never null for an answered slot.]" if request.language == "hi" else ""
     flow_hint = f"[flow_mode: {request.flow_mode}] [worker current location: {destination}]{lang_hint}"
 
-    # Inject compact extracted-state so the LLM skips already-answered slots.
-    # Use explicit None check for lists: [] means "asked, user has no documents" — not missing.
+    # Use explicit None check for lists: [] means "asked, user has no documents", not missing
     state = request.extracted_state
     filled = {k: v for k, v in state.items() if (v is not None and (v or isinstance(v, list)))} if state else {}
     if filled:
@@ -205,7 +219,7 @@ def _synthesize(
     is_emergency = request.flow_mode == "emergency"
     in_intake = (not is_emergency) and _is_intake(state)
 
-    # Tiered max_tokens: emergency=400, intake=500, planning=1024
+    # Tiered token budget: emergency=400, intake=500, planning=1536
     if is_emergency:
         max_tokens = 400
     elif in_intake:
@@ -224,10 +238,10 @@ def _synthesize(
     )
 
 
-# ── Step 4: Assemble ──────────────────────────────────────────────────────────
+# Step 4: Assemble
 
 def _pins_by_scheme(offices: list[dict]) -> dict[str, list[dict]]:
-    """Index curated offices by scheme_id. Python assigns pins — not the LLM."""
+    """Index curated offices by scheme_id. Python assigns pins, not the LLM."""
     idx: dict[str, list[dict]] = {}
     for o in offices:
         sid = o.get("scheme_id", "")
@@ -247,7 +261,7 @@ def _build_cards(llm_cards: list[dict], offices: list[dict]) -> list[SchemeCard]
             log.warning("LLM hallucinated unknown scheme_id %r — dropping card.", sid)
             continue
 
-        # Python resolves pins from curated JSON by scheme_id — LLM pin output is ignored
+        # Python resolves pins from curated JSON; LLM pin output is never used
         raw_pins = scheme_pins.get(sid, [])
         map_pins = [
             MapPin(id=o["id"], label=o["label"], lat=o["lat"], lng=o["lng"], address=o["address"])
@@ -290,7 +304,7 @@ def _assemble(
     """Deterministically assemble the final response. All facts come from Python."""
     prov_data = compute_provenance(metas)
 
-    # Guardrail finalization — Python decides, not LLM
+    # Re-run guardrails with LLM's proposed type; Python finalizes the decision
     llm_refusal_type = llm_output.get("refusal", {}).get("type")
     final_refusal = classify(
         request.message, embed_model,
@@ -298,29 +312,24 @@ def _assemble(
         flow_mode=request.flow_mode,
     )
 
-    # If confidence handoff already handles the uncertainty, suppress Type C —
-    # document hedges ("I don't think I have Aadhaar") match distress exemplars
-    # but are handled more precisely by assess_confidence.
+    # Document hedges match distress exemplars; confidence handoff is more precise, suppress Type C
     if confidence is not None and final_refusal["type"] == "C":
         final_refusal = {"type": None, "reason": ""}
 
-    # verification_required: Python confirms LLM proposal, guardrail C, or confidence flag
     verification_required = (
         final_refusal["type"] == "C"
         or bool(llm_output.get("verification_required", False))
         or (confidence is not None)
     )
 
-    # Merge extracted_state: start from request values, overlay only non-null LLM values.
-    # This prevents a truncated/failed LLM response from regressing collected slots to null.
+    # Overlay only non-null LLM values to prevent a truncated response from regressing slots
     req_state = request.extracted_state or {}
     llm_state = llm_output.get("extracted_state") or {}
     extracted_state = {**req_state, **{k: v for k, v in llm_state.items() if v is not None}}
 
-    # Emergency: empty cards, crisis mode
     if route["is_emergency"]:
         crisis_type = llm_output.get("crisis_type", "distress")
-        # Only show pins once the specific crisis is identified; "distress" = still asking
+        # Pins only shown once crisis type is identified; "distress" means still intake
         emergency_pins = [
             MapPin(
                 id=o["id"], label=o["label"], lat=o["lat"], lng=o["lng"], address=o["address"],
@@ -344,7 +353,6 @@ def _assemble(
             extracted_state=extracted_state,
         )
 
-    # Type A or B blocked — return refusal only
     if route["is_blocked"] or final_refusal["type"] in ("A", "B"):
         rtype = final_refusal["type"]
         return ChatResponse(
@@ -378,46 +386,65 @@ def _assemble(
         ),
         extracted_state=extracted_state,
         confidence_flag=confidence,
+        offer_update=bool(llm_output.get("offer_update", False)),
     )
 
 
-# ── Public entry point ────────────────────────────────────────────────────────
+# Public entry point
 
 def run_pipeline(request: ChatRequest) -> ChatResponse:
     embed_model, collection, offices_map = _get_resources()
     corridor_offices = offices_map.get(request.corridor_id, [])
     state = request.extracted_state or {}
 
-    # Noise gate — only during intake phase, never after cards have been generated
+    # Noise gate applies during intake only
     if request.flow_mode != "emergency" and _is_intake(state) and _is_noise(request.message):
         return _noise_response(state)
 
-    # Route (embed_model already loaded above — ordering confirmed correct)
     route = _route(request, embed_model)
 
-    # If Type A, skip Retrieve + Synthesize
     if route["is_blocked"]:
         return _assemble(request, route, {}, [], corridor_offices, embed_model)
 
-    # Retrieve
     docs, metas = _retrieve(request, embed_model, collection)
-    context = _build_context(docs, metas)  # built once, shared with assess_confidence
+    context = _build_context(docs, metas)
 
-    # Emergency: still retrieve (for physical service locations) but skip scheme synthesis
     if route["is_emergency"]:
-        # Minimal LLM call for calm response text only
         llm_output = _synthesize(request, docs, metas, prebuilt_context=context)
         return _assemble(request, route, llm_output, metas, corridor_offices, embed_model)
 
-    # Synthesize
     llm_output = _synthesize(request, docs, metas, prebuilt_context=context)
 
-    # Confidence assessment — planning only, not during intake (no cards to flag yet)
+    # Intake confidence: intercept before the LLM's response is used.
+    # "Got it" auto-sends "Please continue." to resume intake.
+    if _is_intake(state):
+        _intake_conf = assess_confidence(request.message, context)
+        if _intake_conf is not None:
+            _ack = (
+                "Got it, I have made a note of that. "
+                "We can look into it more carefully once we have all the details."
+            )
+            # Exclude doc_followup from merge; that slot waits for the explicit follow-up answer
+            _merged = {**state}
+            for _k, _v in (llm_output.get("extracted_state") or {}).items():
+                if _v is not None and _k != "doc_followup":
+                    _merged[_k] = _v
+            return _assemble(
+                request, route,
+                {"response": _ack, "cards": [], "extracted_state": _merged,
+                 "verification_required": False, "refusal": {"type": None, "reason": ""},
+                 "offer_update": False},
+                metas, corridor_offices, embed_model, confidence=_intake_conf,
+            )
+
     confidence = assess_confidence(request.message, context) if not _is_intake(state) else None
 
-    # Auto-transition: if this was an intake turn and the LLM just filled the last slot,
-    # immediately run the planning pipeline — no extra user message required.
-    if _is_intake(state):
+    # Auto-transition to planning when the LLM fills the last intake slot.
+    # Guard: if the LLM response still contains "?" it is mid-intake and may have
+    # hallucinated slot values; do not trust them.
+    _intake_response = llm_output.get("response", "")
+    _llm_signals_complete = "?" not in _intake_response
+    if _is_intake(state) and _llm_signals_complete:
         llm_state = llm_output.get("extracted_state") or {}
         merged = {**state, **{k: v for k, v in llm_state.items() if v is not None}}
         if not _is_intake(merged):
@@ -432,8 +459,23 @@ def run_pipeline(request: ChatRequest) -> ChatResponse:
             docs, metas = _retrieve(planning_request, embed_model, collection)
             context = _build_context(docs, metas)
             llm_output = _synthesize(planning_request, docs, metas, prebuilt_context=context)
-            confidence = assess_confidence(planning_request.message, context)
+            # "Please continue." sentinel means the user already acknowledged a confidence panel;
+            # skip re-fire to avoid a second panel on the same planning transition.
+            _CONTINUE_SENTINEL = {"Please continue.", "कृपया जारी रखें।"}
+            _is_post_conf = any(
+                str(_t.get("content", "")).strip() in _CONTINUE_SENTINEL
+                for _t in request.conversation_history[-10:]
+                if isinstance(_t, dict) and _t.get("role") == "user"
+            )
+            if _is_post_conf:
+                confidence = None
+            else:
+                _conf_parts = [planning_request.message]
+                for _turn in reversed(request.conversation_history[-6:]):
+                    if isinstance(_turn, dict) and _turn.get("role") == "user":
+                        _conf_parts.append(str(_turn.get("content", "")))
+                        break
+                confidence = assess_confidence(" ".join(_conf_parts), context)
             return _assemble(planning_request, route, llm_output, metas, corridor_offices, embed_model, confidence=confidence)
 
-    # Assemble
     return _assemble(request, route, llm_output, metas, corridor_offices, embed_model, confidence=confidence)

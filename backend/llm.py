@@ -58,8 +58,7 @@ def _parse_response(raw: str) -> dict:
 
 
 def _wrap_plain(raw: str, req_state: dict | None = None) -> dict:
-    # Try to salvage the "response" field from truncated/malformed JSON.
-    # If no JSON at all, use the raw text directly — it is a valid response, just unwrapped.
+    """Salvage the response field from truncated JSON, or wrap raw text as a valid response."""
     m = re.search(r'"response"\s*:\s*"((?:[^"\\]|\\.)*)"', raw)
     if m:
         response_text = m.group(1).encode('raw_unicode_escape').decode('unicode_escape')
@@ -110,19 +109,17 @@ def call_llm(
     req_state: dict | None = None,
 ) -> dict:
     """
-    Try SambaNova DeepSeek V3.1 first; fall back to Groq 70B on rate limit or error.
-    is_emergency=True loads the dedicated emergency prompt.
-    is_intake=True loads the short intake prompt.
-    max_tokens is caller-computed: intake=500, emergency=400, planning=1024.
+    Try DeepSeek V3.2 (aicredits.in) first; fall back to Groq 70B on rate limit or error.
+    is_emergency=True loads the emergency prompt; is_intake=True loads the intake prompt.
+    max_tokens is caller-determined: intake=500, emergency=400, planning=1536.
     """
     system_prompt = _load_system_prompt(is_intake, is_emergency=is_emergency)
 
     history_window = 3 if is_intake else 4
     windowed_history = conversation_history[-history_window:] if conversation_history else []
-    # The frontend pushes the current user message before the API call, so it appears
-    # at the end of windowed_history. Trim it — we append the augmented version below.
-    # Without this, the model sees two consecutive user messages and fails to register
-    # the answered slot in extracted_state.
+    # Frontend pushed the current user message before this call, placing it at the end of
+    # windowed_history. Removed here so the augmented version is the only user turn.
+    # Two consecutive user turns caused the model to miss the answered intake slot.
     if windowed_history and windowed_history[-1].get("role") == "user":
         windowed_history = windowed_history[:-1]
 
@@ -136,19 +133,17 @@ def call_llm(
         {"role": "user", "content": user_message},
     ]
 
-    # --- Primary: DeepSeek V3.2 via aicredits.in ---
     raw = ""
     try:
         raw = _call_primary(messages, max_tokens)
         try:
             return _parse_response(raw)
         except (ValueError, json.JSONDecodeError):
-            log.warning("DeepSeek V3.2 parse failed — falling back to Groq 70B. Snippet: %s", raw[:200])
+            log.warning("DeepSeek V3.2 parse failed, falling back to Groq 70B. Snippet: %s", raw[:200])
             raise ValueError("parse failed, fall to Groq")
     except Exception as primary_exc:
-        log.warning("Primary LLM failed (%s: %s) — falling back to Groq 70B.", type(primary_exc).__name__, primary_exc)
+        log.warning("Primary LLM failed (%s: %s), falling back to Groq 70B.", type(primary_exc).__name__, primary_exc)
 
-    # --- Fallback: Groq 70B instruct ---
     groq_max_tokens = min(max_tokens, 1800)
     raw = ""
     try:
@@ -157,10 +152,10 @@ def call_llm(
     except GroqRateLimitError as exc:
         log.error("Groq 70B fallback also rate-limited: %s", exc)
         raise RuntimeError(
-            "Both SambaNova and Groq are unavailable. Wait a moment and retry, or check your API keys."
+            "Both DeepSeek V3.2 and Groq are unavailable. Wait a moment and retry, or check your API keys."
         ) from exc
     except (ValueError, json.JSONDecodeError):
         return _wrap_plain(raw, req_state)
     except Exception as exc:
         log.error("Groq 70B fallback failed (%s: %s).", type(exc).__name__, exc)
-        raise RuntimeError(f"SambaNova DeepSeek V3.1 and Groq 70B both failed. Last error: {exc}") from exc
+        raise RuntimeError(f"DeepSeek V3.2 and Groq 70B both failed. Last error: {exc}") from exc

@@ -1,5 +1,5 @@
-// Map module — Leaflet + OSM with static address-card fallback
-// All pin data comes from the /chat payload (backend). This file only renders.
+// Map module: Leaflet + OSM tiles with static address-card fallback.
+// All pin data comes from the /chat payload; this file only renders.
 
 let _map = null;
 let _markers = [];
@@ -70,7 +70,7 @@ function updatePins(pinIds) {
   _dropMarkers(subset);
 }
 
-// ── Internal helpers ───────────────────────────────────────────────────────
+// Internal helpers
 
 function _dropMarkers(pins) {
   // Clear existing markers

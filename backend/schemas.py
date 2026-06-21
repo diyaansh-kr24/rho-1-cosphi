@@ -2,7 +2,11 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-# ── Input ─────────────────────────────────────────────────────────────────────
+# Input
+
+class VerifyCodeRequest(BaseModel):
+    code: str
+
 
 class ChatRequest(BaseModel):
     message: str
@@ -13,7 +17,7 @@ class ChatRequest(BaseModel):
     language: str = "en"      # en | hi — drives response language
 
 
-# ── Output sub-models ─────────────────────────────────────────────────────────
+# Output sub-models
 
 class Source(BaseModel):
     scheme_id: str
@@ -58,7 +62,7 @@ class Refusal(BaseModel):
     reason: str
 
 
-# ── Output ────────────────────────────────────────────────────────────────────
+# Output
 
 class ChatResponse(BaseModel):
     response: str
@@ -72,3 +76,4 @@ class ChatResponse(BaseModel):
     refusal: Refusal
     extracted_state: dict = {}
     confidence_flag: Optional[dict] = None  # set by confidence.py; None = confident verdict
+    offer_update: bool = False              # LLM detected a state change; frontend renders confirm banner

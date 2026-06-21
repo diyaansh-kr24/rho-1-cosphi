@@ -1,12 +1,12 @@
-// Audio module — Sarvam AI STT/TTS via /audio/* backend proxy
-// Precedence (binding): Emergency auto-play > global voiceover toggle > manual click
-// Auto-play fires ONLY: (A) anywhere in Emergency flow, (B) when a popup opens (Type-C panel, Help)
-// Everything else is manual via 🔊 icon.
+// Audio module: Sarvam AI STT/TTS via /audio/* backend proxy.
+// Auto-play fires only in Emergency flow or when a popup opens (Type-C panel, Help).
+// Everything else is manual via the speaker icon.
+// Precedence: Emergency auto-play > global voiceover toggle > manual click.
 
-let _ttsQueue = Promise.resolve();   // serialise TTS calls
-let _currentAudio = null;            // currently playing HTMLAudioElement
+let _ttsQueue = Promise.resolve();
+let _currentAudio = null;
 
-// ── Public API ─────────────────────────────────────────────────────────────
+// Public API
 
 /**
  * stopAudio() — immediately halt any playing audio and discard the queue.
@@ -124,7 +124,7 @@ async function startSTT(onResult, onError, onLevel, onStopRecording) {
   }
 }
 
-// ── Internal ───────────────────────────────────────────────────────────────
+// Internal
 
 async function _doTTS(text) {
   if (!text || !text.trim()) return;
@@ -148,7 +148,7 @@ async function _doTTS(text) {
     });
     if (!res.ok) throw new Error(`TTS ${res.status}`);
     const json = await res.json();
-    // Sarvam returns { audios: ["<base64 wav>"] }
+    // Sarvam returns { audios: ["<base64 wav>"] } — decode and play inline
     const b64 = json.audios && json.audios[0];
     if (!b64) return;
     const audioBlob = _b64ToBlob(b64, 'audio/wav');
