@@ -1,4 +1,4 @@
-# Saarthi - Migrant Worker Welfare Navigator
+![Saarthi](banner.svg)
 
 A mobile-first, AI-powered welfare-navigation tool for internal migrant workers in India. Saarthi runs in the browser on any low-end Android device and helps a worker who has relocated interstate understand which portable government schemes they can access, and gives them the concrete steps to do so. Voice input and output in Hindi and English are powered by [Sarvam AI](https://www.sarvam.ai), making the tool accessible to low-literacy users without requiring a separate app install.
 

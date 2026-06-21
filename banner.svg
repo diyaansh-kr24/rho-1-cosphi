@@ -1,0 +1,74 @@
+<svg width="1200" height="260" viewBox="0 0 1200 260" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow" cx="78%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#2E1F14"/>
+      <stop offset="100%" stop-color="#1F1410"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="260" fill="url(#glow)"/>
+
+  <!-- Left accent bar -->
+  <rect width="5" height="260" fill="#C8621A"/>
+
+  <!-- Bottom border -->
+  <rect y="255" width="1200" height="5" fill="#C8621A"/>
+
+  <!-- Decorative concentric circles (right) -->
+  <circle cx="1060" cy="130" r="148" fill="none" stroke="#C8621A" stroke-width="0.8" opacity="0.13"/>
+  <circle cx="1060" cy="130" r="108" fill="none" stroke="#C8621A" stroke-width="0.8" opacity="0.10"/>
+  <circle cx="1060" cy="130" r="68"  fill="none" stroke="#C8621A" stroke-width="0.8" opacity="0.08"/>
+  <circle cx="1060" cy="130" r="28"  fill="none" stroke="#C8621A" stroke-width="1.2" opacity="0.14"/>
+  <circle cx="1060" cy="130" r="6"   fill="#C8621A" opacity="0.25"/>
+
+  <!-- Dot grid -->
+  <g fill="#C8621A" opacity="0.07">
+    <circle cx="880" cy="50"  r="2"/><circle cx="920" cy="50"  r="2"/><circle cx="960" cy="50"  r="2"/>
+    <circle cx="880" cy="90"  r="2"/><circle cx="920" cy="90"  r="2"/><circle cx="960" cy="90"  r="2"/>
+    <circle cx="880" cy="130" r="2"/><circle cx="920" cy="130" r="2"/><circle cx="960" cy="130" r="2"/>
+    <circle cx="880" cy="170" r="2"/><circle cx="920" cy="170" r="2"/><circle cx="960" cy="170" r="2"/>
+    <circle cx="880" cy="210" r="2"/><circle cx="920" cy="210" r="2"/><circle cx="960" cy="210" r="2"/>
+  </g>
+
+  <!-- SAARTHI in cream -->
+  <text x="72" y="124"
+        font-family="'Segoe UI', system-ui, -apple-system, sans-serif"
+        font-size="72" font-weight="800" letter-spacing="10"
+        fill="#FAF6F1">SAARTHI</text>
+
+  <!-- AI in orange immediately after -->
+  <text x="498" y="124"
+        font-family="'Segoe UI', system-ui, -apple-system, sans-serif"
+        font-size="72" font-weight="800" letter-spacing="10"
+        fill="#C8621A">AI</text>
+
+  <!-- Subtitle -->
+  <text x="72" y="164"
+        font-family="'Segoe UI', system-ui, -apple-system, sans-serif"
+        font-size="21" font-weight="400" letter-spacing="2"
+        fill="#FAF6F1" opacity="0.7">Migrant Worker Welfare Navigator</text>
+
+  <!-- Tagline -->
+  <text x="72" y="196"
+        font-family="'Segoe UI', system-ui, -apple-system, sans-serif"
+        font-size="13.5" letter-spacing="0.3"
+        fill="#7A706A">AI-powered interstate welfare guidance · Hindi &amp; English · Built for India's ~41 million migrant workers</text>
+
+  <!-- Tech pills -->
+  <rect x="72"  y="218" width="72" height="22" rx="11" fill="#C8621A" opacity="0.10"/>
+  <rect x="72"  y="218" width="72" height="22" rx="11" fill="none" stroke="#C8621A" stroke-width="0.8" opacity="0.2"/>
+  <text x="108" y="233" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="600" fill="#C8621A" text-anchor="middle" letter-spacing="0.4">FastAPI</text>
+
+  <rect x="152" y="218" width="84" height="22" rx="11" fill="#C8621A" opacity="0.10"/>
+  <rect x="152" y="218" width="84" height="22" rx="11" fill="none" stroke="#C8621A" stroke-width="0.8" opacity="0.2"/>
+  <text x="194" y="233" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="600" fill="#C8621A" text-anchor="middle" letter-spacing="0.4">ChromaDB</text>
+
+  <rect x="244" y="218" width="80" height="22" rx="11" fill="#C8621A" opacity="0.10"/>
+  <rect x="244" y="218" width="80" height="22" rx="11" fill="none" stroke="#C8621A" stroke-width="0.8" opacity="0.2"/>
+  <text x="284" y="233" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="600" fill="#C8621A" text-anchor="middle" letter-spacing="0.4">Groq LLM</text>
+
+  <rect x="332" y="218" width="84" height="22" rx="11" fill="#C8621A" opacity="0.10"/>
+  <rect x="332" y="218" width="84" height="22" rx="11" fill="none" stroke="#C8621A" stroke-width="0.8" opacity="0.2"/>
+  <text x="374" y="233" font-family="'Segoe UI', system-ui, sans-serif" font-size="11" font-weight="600" fill="#C8621A" text-anchor="middle" letter-spacing="0.4">Sarvam AI</text>
+</svg>
